@@ -1,0 +1,52 @@
+/**
+ * 站点页脚样式
+ */
+.site-footer {
+  margin-top: @gap-xl;
+  background: @bg-card;
+  border-top: 1px solid @border-light;
+  padding: @gap-lg 0;
+
+  &__inner {
+    .container();
+    display: flex;
+    flex-direction: column;
+    gap: @gap;
+    align-items: center;
+    text-align: center;
+  }
+
+  &__brand {
+    .flex-center();
+    flex-direction: column;
+    gap: 6px;
+    color: @text-secondary;
+  }
+
+  &__logo {
+    .flex-center();
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: @text;
+  }
+
+  &__links {
+    .flex-center();
+    gap: @gap-lg;
+
+    a {
+      color: @text-secondary;
+      transition: @transition;
+
+      &:hover {
+        color: @primary;
+      }
+    }
+  }
+
+  &__copy {
+    color: @text-tertiary;
+    font-size: 13px;
+  }
+}

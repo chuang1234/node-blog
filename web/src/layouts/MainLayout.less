@@ -1,0 +1,13 @@
+/**
+ * 前台布局样式
+ */
+.main-layout {
+  min-height: 100vh;
+  background: @bg-body;
+
+  &__content {
+    flex: 1;
+    min-height: calc(100vh - @header-height - 220px);
+    .container();
+  }
+}

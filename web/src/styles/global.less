@@ -1,0 +1,180 @@
+/**
+ * 全局基础样式与主题变量
+ *
+ * 深色/浅色模式通过 <html data-theme="dark|light"> 切换，
+ * 所有组件样式只引用 CSS 变量，不再单独为深色模式写规则。
+ */
+
+// ---------------- 浅色主题（默认） ----------------
+:root {
+  --c-primary: #1677ff;
+  --c-primary-hover: #4096ff;
+  --c-success: #52c41a;
+  --c-warning: #faad14;
+  --c-danger: #ff4d4f;
+
+  --c-text: rgba(0, 0, 0, 0.88);
+  --c-text-secondary: rgba(0, 0, 0, 0.65);
+  --c-text-tertiary: rgba(0, 0, 0, 0.45);
+  --c-text-inverse: #ffffff;
+
+  --c-bg-body: #f5f7fa;
+  --c-bg-card: #ffffff;
+  --c-bg-hover: rgba(0, 0, 0, 0.03);
+  --c-bg-code: #f6f8fa;
+
+  --c-border: rgba(0, 0, 0, 0.12);
+  --c-border-light: rgba(0, 0, 0, 0.06);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  color-scheme: light;
+}
+
+// ---------------- 深色主题 ----------------
+html[data-theme='dark'] {
+  --c-primary: #3c89ff;
+  --c-primary-hover: #69b1ff;
+  --c-success: #6abe39;
+  --c-warning: #d89614;
+  --c-danger: #dc4446;
+
+  --c-text: rgba(255, 255, 255, 0.88);
+  --c-text-secondary: rgba(255, 255, 255, 0.65);
+  --c-text-tertiary: rgba(255, 255, 255, 0.45);
+  --c-text-inverse: #141414;
+
+  --c-bg-body: #131417;
+  --c-bg-card: #1c1d21;
+  --c-bg-hover: rgba(255, 255, 255, 0.06);
+  --c-bg-code: #23252b;
+
+  --c-border: rgba(255, 255, 255, 0.18);
+  --c-border-light: rgba(255, 255, 255, 0.1);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
+}
+
+// ---------------- 基础重置 ----------------
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: @bg-body;
+  color: @text;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // 主题切换过渡
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+// 全局细滚动条
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: @border;
+  border-radius: 4px;
+
+  &:hover {
+    background: @text-tertiary;
+  }
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+// ---------------- 通用动画 ----------------
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ai-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/** 列表项入场动画，配合 style={{ animationDelay }} 做逐条延迟 */
+.fade-in-up {
+  animation: fade-in-up 0.4s ease both;
+}
+
+// ---------------- 首屏 loading 移除后的兜底 ----------------
+#boot-loading {
+  display: none;
+}
+
+// ---------------- 第三方组件微调 ----------------
+// react-quill 深色模式适配
+html[data-theme='dark'] {
+  .ql-toolbar,
+  .ql-container {
+    border-color: @border !important;
+  }
+
+  .ql-toolbar .ql-stroke {
+    stroke: @text-secondary;
+  }
+
+  .ql-toolbar .ql-fill {
+    fill: @text-secondary;
+  }
+
+  .ql-toolbar .ql-picker-label {
+    color: @text-secondary;
+  }
+
+  .ql-editor.ql-blank::before {
+    color: @text-tertiary;
+  }
+}

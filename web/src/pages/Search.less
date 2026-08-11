@@ -1,0 +1,30 @@
+/**
+ * 搜索页样式
+ */
+.search {
+  padding-top: @gap-lg;
+  padding-bottom: @gap-lg;
+
+  &__bar {
+    max-width: 640px;
+    margin: 0 auto @gap-lg;
+    text-align: center;
+  }
+
+  &__count {
+    margin-top: 10px;
+    color: @text-tertiary;
+    font-size: 13px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: @gap;
+  }
+
+  &__pager {
+    .flex-center();
+    margin-top: @gap-lg;
+  }
+}

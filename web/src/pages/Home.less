@@ -1,0 +1,172 @@
+/**
+ * 首页样式
+ */
+.home {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: @gap-lg;
+  padding-top: @gap-lg;
+  padding-bottom: @gap-lg;
+
+  &__main {
+    min-width: 0;
+  }
+
+  &__bar {
+    .flex-between();
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: @gap;
+  }
+
+  &__keyword {
+    color: @primary;
+    font-weight: 600;
+  }
+
+  &__tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: @gap;
+    color: @text-tertiary;
+
+    .ant-tag.is-active {
+      outline: 1px solid @primary;
+    }
+
+    &-more {
+      border: none;
+      background: transparent;
+      color: @primary;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0 4px;
+      line-height: 22px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: @gap;
+  }
+
+  &__pager {
+    .flex-center();
+    margin-top: @gap-lg;
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    gap: @gap;
+  }
+
+  &__card {
+    .card-base();
+
+    .ant-card-head-title {
+      font-weight: 600;
+    }
+  }
+
+  &__rank {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px dashed @border-light;
+      font-size: 13px;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__rank-no {
+    .flex-center();
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: @bg-hover;
+    color: @text-tertiary;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &__hot {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed @border-light;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &-no {
+      .flex-center();
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: @primary;
+      color: #fff;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    &-cover {
+      width: 56px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    &-body {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-title {
+      .ellipsis();
+      font-size: 13px;
+      color: @text;
+
+      &:hover {
+        color: @primary;
+      }
+    }
+
+    &-meta {
+      font-size: 12px;
+      color: @text-tertiary;
+      .flex-center();
+      gap: 4px;
+      justify-content: flex-start;
+    }
+  }
+
+  .respond-to(@screen-lg, {
+    grid-template-columns: 1fr;
+
+    &__side {
+      order: -1;
+    }
+  });
+}

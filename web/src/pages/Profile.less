@@ -1,0 +1,83 @@
+/**
+ * 个人中心样式
+ */
+.profile {
+  padding-top: @gap-lg;
+  padding-bottom: @gap-lg;
+
+  &__header {
+    .card-base();
+    padding: @gap-lg;
+    display: flex;
+    align-items: center;
+    gap: @gap;
+    margin-bottom: @gap;
+  }
+
+  &__header-info {
+    flex: 1;
+    min-width: 0;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      color: @text;
+    }
+
+    p {
+      margin: 2px 0;
+      color: @text-tertiary;
+    }
+  }
+
+  &__bio {
+    color: @text-secondary !important;
+  }
+
+  &__joined {
+    font-size: 12px;
+    color: @text-tertiary;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: @gap;
+    margin-bottom: @gap;
+  }
+
+  &__overview {
+    margin-top: @gap;
+  }
+
+  &__fav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: @gap;
+  }
+
+  &__settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: @gap;
+  }
+
+  &__settings-card {
+    .card-base();
+  }
+
+  &__avatar-row {
+    display: flex;
+    align-items: center;
+    gap: @gap;
+  }
+
+  .respond-to(@screen-md, {
+    &__settings {
+      grid-template-columns: 1fr;
+    }
+    &__stats {
+      grid-template-columns: 1fr;
+    }
+  });
+}

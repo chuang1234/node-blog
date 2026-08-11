@@ -1,0 +1,122 @@
+/**
+ * 编辑器样式
+ */
+.editor {
+  padding-top: @gap;
+  padding-bottom: @gap-lg;
+  display: flex;
+  flex-direction: column;
+  gap: @gap;
+
+  &__loading {
+    .flex-center();
+    min-height: 50vh;
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__title {
+    font-weight: 700;
+    flex: 1;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  &__cover-upload {
+    .flex-center();
+    flex-direction: column;
+    gap: 4px;
+    width: 100px;
+    height: 100px;
+    border: 1px dashed @border;
+    border-radius: @radius-sm;
+    color: @text-tertiary;
+    cursor: pointer;
+    transition: @transition;
+
+    &:hover {
+      border-color: @primary;
+      color: @primary;
+    }
+  }
+
+  &__cover-thumb {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: @radius-sm;
+  }
+
+  &__ai-bar {
+    .flex-between();
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 12px;
+    background: @bg-hover;
+    border-radius: @radius-sm;
+  }
+
+  &__panes {
+    display: grid;
+    gap: @gap;
+    min-height: 420px;
+
+    &--edit,
+    &--preview {
+      grid-template-columns: 1fr;
+    }
+
+    &--split {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: 420px;
+    padding: 16px;
+    border: 1px solid @border;
+    border-radius: @radius;
+    background: @bg-card;
+    color: @text;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: @primary;
+    }
+  }
+
+  &__preview {
+    .card-base();
+    padding: 16px;
+    overflow: auto;
+    .thin-scrollbar();
+    max-height: 70vh;
+  }
+
+  &__preview-empty {
+    color: @text-tertiary;
+    text-align: center;
+    padding: 60px 0;
+  }
+
+  .respond-to(@screen-md, {
+    &__panes--split {
+      grid-template-columns: 1fr;
+    }
+  });
+}

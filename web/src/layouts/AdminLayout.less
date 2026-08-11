@@ -1,0 +1,78 @@
+/**
+ * 后台布局样式
+ */
+.admin-layout {
+  min-height: 100vh;
+
+  &__sider {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+  }
+
+  &__logo {
+    .flex-center();
+    gap: 8px;
+    height: @header-height;
+    padding: 0 16px;
+    font-weight: 700;
+    font-size: 16px;
+    border-bottom: 1px solid @border-light;
+
+    &-mark {
+      .flex-center();
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: @primary;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+  }
+
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: @header-height;
+    padding: 0 @gap;
+    background: @bg-card;
+    border-bottom: 1px solid @border-light;
+  }
+
+  &__back {
+    color: @text-secondary;
+    .flex-center();
+    gap: 6px;
+    transition: @transition;
+
+    &:hover {
+      color: @primary;
+    }
+  }
+
+  &__user {
+    cursor: pointer;
+    .flex-center();
+    gap: 8px;
+  }
+
+  &__username {
+    color: @text;
+  }
+
+  &__content {
+    background: @bg-body;
+    padding: @gap-lg;
+  }
+
+  &__container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+}

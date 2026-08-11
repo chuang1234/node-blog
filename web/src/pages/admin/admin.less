@@ -1,0 +1,123 @@
+/**
+ * 后台管理页共享样式
+ */
+.admin-page {
+  &__header {
+    .flex-between();
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: @gap;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: @text;
+  }
+
+  &__hint {
+    color: @text-tertiary;
+    font-size: 13px;
+  }
+}
+
+.admin-card {
+  .card-base();
+}
+
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: @gap;
+  margin-bottom: @gap;
+
+  .respond-to(@screen-lg, {
+    grid-template-columns: repeat(2, 1fr);
+  });
+  .respond-to(@screen-sm, {
+    grid-template-columns: 1fr;
+  });
+}
+
+.admin-stat {
+  .card-base();
+  padding: @gap;
+
+  &__label {
+    color: @text-tertiary;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  &__value {
+    font-size: 26px;
+    font-weight: 700;
+    color: @text;
+  }
+
+  &__icon {
+    float: right;
+    font-size: 22px;
+    color: @primary;
+  }
+}
+
+.admin-charts {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: @gap;
+  margin-bottom: @gap;
+
+  .respond-to(@screen-lg, {
+    grid-template-columns: 1fr;
+  });
+}
+
+.admin-chart-card {
+  .card-base();
+  padding: @gap;
+
+  &__title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: @text;
+  }
+}
+
+.ai-config {
+  display: flex;
+  flex-direction: column;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: @gap;
+    padding: 14px 0;
+    border-bottom: 1px dashed @border-light;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__key {
+    font-weight: 600;
+    color: @text;
+    font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+    font-size: 13px;
+  }
+
+  &__desc {
+    color: @text-tertiary;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  &__control {
+    flex-shrink: 0;
+    min-width: 220px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}

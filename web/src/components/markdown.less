@@ -1,0 +1,119 @@
+/**
+ * Markdown 正文样式
+ * 颜色统一引用 CSS 变量，深浅色自动适配
+ */
+.markdown-body {
+  color: @text;
+  font-size: 15px;
+  line-height: 1.8;
+  word-break: break-word;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 1.4em 0 0.6em;
+    font-weight: 700;
+    line-height: 1.35;
+    color: @text;
+  }
+  h1 { font-size: 1.7em; }
+  h2 { font-size: 1.4em; border-bottom: 1px solid @border-light; padding-bottom: 0.3em; }
+  h3 { font-size: 1.2em; }
+  h4 { font-size: 1.05em; }
+
+  p {
+    margin: 0.8em 0;
+  }
+
+  a {
+    color: @primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: 1.6em;
+    margin: 0.8em 0;
+  }
+
+  li {
+    margin: 0.3em 0;
+  }
+
+  blockquote {
+    margin: 1em 0;
+    padding: 0.4em 1em;
+    border-left: 4px solid @primary;
+    background: @bg-hover;
+    border-radius: 0 @radius-sm @radius-sm 0;
+    color: @text-secondary;
+
+    p {
+      margin: 0.3em 0;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    border-radius: @radius-sm;
+    margin: 0.6em 0;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid @border-light;
+    margin: 1.6em 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    font-size: 14px;
+    overflow: hidden;
+    border-radius: @radius-sm;
+  }
+
+  th,
+  td {
+    border: 1px solid @border;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  thead th {
+    background: @bg-hover;
+    font-weight: 600;
+  }
+
+  tbody tr:nth-child(even) {
+    background: @bg-hover;
+  }
+
+  code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.9em;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    background: @bg-code;
+    color: @danger;
+  }
+
+  pre code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  // 任务列表
+  input[type='checkbox'] {
+    margin-right: 6px;
+  }
+}

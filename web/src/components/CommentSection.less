@@ -1,0 +1,115 @@
+/**
+ * 评论区样式
+ */
+.comment-section {
+  .card-base();
+  padding: @gap-lg;
+  margin-top: @gap-lg;
+
+  &__head {
+    .flex-between();
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: @gap;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 18px;
+    color: @text;
+  }
+
+  &__editor {
+    display: flex;
+    gap: 10px;
+    margin-bottom: @gap;
+  }
+
+  &__editor-body {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  &__send {
+    margin-top: 8px;
+  }
+
+  &__login-tip {
+    padding: 12px;
+    border-radius: @radius-sm;
+    background: @bg-hover;
+    color: @text-tertiary;
+    text-align: center;
+    margin-bottom: @gap;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: @gap;
+  }
+
+  &__pager {
+    .flex-center();
+    margin-top: @gap;
+  }
+}
+
+.comment-item {
+  display: flex;
+  gap: 10px;
+
+  &.is-reply {
+    margin-top: 10px;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: @text;
+  }
+
+  &__time {
+    color: @text-tertiary;
+    font-size: 12px;
+  }
+
+  &__content {
+    margin: 4px 0;
+    color: @text;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  &__actions {
+    .flex-center();
+    gap: 4px;
+    justify-content: flex-start;
+  }
+
+  &__reply-box {
+    margin-top: 8px;
+  }
+
+  &__replies {
+    margin-top: 10px;
+    padding-left: 12px;
+    border-left: 2px solid @border-light;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
