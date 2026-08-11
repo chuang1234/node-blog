@@ -58,6 +58,7 @@ export default function CommentSection({ blogId }: Props) {
 
   const [replyTarget, setReplyTarget] = useState<{ id: number; name: string } | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [aiReplyTargetId, setAiReplyTargetId] = useState<number | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   const [reportTarget, setReportTarget] = useState<Comment | null>(null);
@@ -91,11 +92,13 @@ export default function CommentSection({ blogId }: Props) {
     }
     setSubmitting(true);
     try {
-      await commentApi.create({ blogId, content: text, parentId });
+      const isAiReply = Boolean(parentId && replyTarget && replyTarget.id === aiReplyTargetId);
+      await commentApi.create({ blogId, content: text, parentId, isAiReply });
       antdMessage.success(t('comment.submitSuccess'));
       setInput('');
       setReplyText('');
       setReplyTarget(null);
+      setAiReplyTargetId(null);
       setPageNum(1);
       load();
     } catch {
@@ -132,6 +135,7 @@ export default function CommentSection({ blogId }: Props) {
     try {
       const res = await aiApi.reply({ comment: c.content, blogId, tone: 'friendly' });
       setReplyText(res.reply);
+      setAiReplyTargetId(c.id);
       antdMessage.success(t('ai.aiReplyGenerated'));
     } catch {
       /* ignore */
@@ -160,7 +164,12 @@ export default function CommentSection({ blogId }: Props) {
       <div className="comment-item__body">
         <div className="comment-item__head">
           <span className="comment-item__name">{c.userName}</span>
-          {c.isAiReply && (
+          {depth > 0 && c.parentId && c.rootId && c.parentId !== c.rootId && c.replyToName && (
+            <span className="comment-item__reply-to">
+              {t('comment.replyTo', { name: c.replyToName })}
+            </span>
+          )}
+          {!!c.isAiReply && (
             <Tag color="purple" className="comment-item__ai">
               <RobotOutlined /> {t('comment.aiReply')}
             </Tag>
@@ -185,7 +194,10 @@ export default function CommentSection({ blogId }: Props) {
             type="text"
             size="small"
             icon={<MessageOutlined />}
-            onClick={() => setReplyTarget({ id: c.id, name: c.userName || '' })}
+            onClick={() => {
+              setReplyTarget({ id: c.id, name: c.userName || '' });
+              setAiReplyTargetId(null);
+            }}
             disabled={!user}
           >
             {t('comment.reply')}
@@ -232,7 +244,7 @@ export default function CommentSection({ blogId }: Props) {
               >
                 {t('comment.submit')}
               </Button>
-              <Button size="small" onClick={() => setReplyTarget(null)}>
+              <Button size="small" onClick={() => { setReplyTarget(null); setAiReplyTargetId(null); }}>
                 {t('common.cancel')}
               </Button>
             </Space>

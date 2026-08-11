@@ -60,7 +60,7 @@ module.exports = {
    * 发表评论
    * 流程：内容审核 → 落库 → 异步情感分析 → 可选 AI 自动回复
    */
-  async create(userId, { blogId, content, parentId }) {
+  async create(userId, { blogId, content, parentId, isAiReply = false }) {
     const blog = await blogDao.findOwner(blogId);
     if (!blog) throw errors.notFound('文章不存在');
     if (blog.status !== 'published') throw errors.forbidden('该文章暂不支持评论');
@@ -69,7 +69,7 @@ module.exports = {
     if (!clean) throw errors.param('评论内容不能为空');
 
     // 内容审核
-    const check = await moderationService.moderate(clean, { userId });
+    const check = await moderationService.moderate(clean, { userId, scene: 'comment' });
     if (!check.pass) {
       throw errors.violation('评论包含违规内容，已被拦截', {
         risks: check.risks,
@@ -94,6 +94,7 @@ module.exports = {
       parentId: parentId || null,
       rootId,
       content: finalContent,
+      isAiReply: isAiReply ? 1 : 0,
     });
 
     await blogDao.incrCounter(blogId, 'comment', 1);

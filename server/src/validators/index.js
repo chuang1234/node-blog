@@ -131,6 +131,7 @@ const comment = {
       'any.required': '评论内容不能为空',
     }),
     parentId: id.allow(null),
+    isAiReply: Joi.boolean().default(false),
   }),
 
   listQuery: Joi.object({

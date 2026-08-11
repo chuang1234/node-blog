@@ -164,6 +164,7 @@ const enUS: typeof zhCN = {
     sentimentNegative: 'Negative',
     sentimentUnknown: 'Not analyzed',
     aiReply: 'AI reply',
+    report: 'Report',
     reportTitle: 'Report comment',
     reportReason: 'Reason',
     reportPlaceholder: 'Briefly describe the issue',

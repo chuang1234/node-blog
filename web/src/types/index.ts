@@ -171,6 +171,7 @@ export interface Comment {
   blogId: number;
   userId: number;
   parentId: number | null;
+  rootId: number | null;
   content: string;
   sentiment: Sentiment;
   sentimentScore: number;
@@ -182,6 +183,7 @@ export interface Comment {
   userName?: string;
   userAvatar?: string;
   blogTitle?: string;
+  replyToName?: string;
   replies?: Comment[];
   replyCount?: number;
   liked?: boolean;
@@ -191,6 +193,7 @@ export interface CommentPayload {
   blogId: number;
   content: string;
   parentId?: number | null;
+  isAiReply?: boolean;
 }
 
 export interface Report {

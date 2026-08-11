@@ -81,6 +81,20 @@
     color: @text;
   }
 
+  &__reply-to {
+    color: @text-tertiary;
+    font-size: 12px;
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 1px;
+      height: 10px;
+      background: @border;
+      margin: 0 8px;
+      vertical-align: middle;
+    }
+  }
+
   &__time {
     color: @text-tertiary;
     font-size: 12px;

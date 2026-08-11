@@ -69,4 +69,4 @@ async function saveBatch(items) {
   return count;
 }
 
-module.exports = { getString, getNumber, getBoolean, list, saveBatch, invalidate, loadAll };
+module.exports = { getRaw, getString, getNumber, getBoolean, list, saveBatch, invalidate, loadAll };

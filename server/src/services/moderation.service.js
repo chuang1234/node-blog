@@ -63,9 +63,25 @@ async function scanLocal(text) {
 /**
  * 完整审核（本地规则 + AI 语义）
  * @param {string} text 待审内容
- * @param {{useAi?: boolean, userId?: number, scene?: string}} options
+ * @param {{useAi?: boolean, userId?: number, scene?: 'blog'|'comment'|string}} options
  * @returns {Promise<{pass: boolean, level: 'safe'|'medium'|'high', risks: Array, masked: string, suggestion: string, aiChecked: boolean}>}
  */
+/**
+ * 按场景判断是否启用 AI 语义审核
+ * 场景专属开关（ai.auto_moderate_blog / ai.auto_moderate_comment）优先；
+ * 未配置时回退到通用开关 ai.auto_moderate。
+ */
+async function isAiModerateEnabled(scene) {
+  if (scene === 'blog' || scene === 'comment') {
+    const key = scene === 'blog' ? 'ai.auto_moderate_blog' : 'ai.auto_moderate_comment';
+    const raw = await aiConfigService.getRaw(key);
+    if (raw !== undefined) {
+      return String(raw).toLowerCase() === 'true' || raw === '1';
+    }
+  }
+  return aiConfigService.getBoolean('ai.auto_moderate', true);
+}
+
 async function moderate(text, options = {}) {
   const content = String(text || '');
   if (!content.trim()) {
@@ -93,7 +109,9 @@ async function moderate(text, options = {}) {
   }
 
   // 第二级：AI 语义审核
-  const useAi = options.useAi !== false && (await aiConfigService.getBoolean('ai.auto_moderate', true));
+  // 开关按场景拆分：ai.auto_moderate_blog（文章）/ ai.auto_moderate_comment（评论）
+  // 场景专属开关未配置时回退到通用开关 ai.auto_moderate
+  const useAi = options.useAi !== undefined ? options.useAi : await isAiModerateEnabled(options.scene);
   let aiChecked = false;
 
   if (useAi) {

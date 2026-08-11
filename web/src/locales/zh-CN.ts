@@ -162,6 +162,7 @@ export default {
     sentimentNegative: '负向',
     sentimentUnknown: '未分析',
     aiReply: 'AI 回复',
+    report: '举报',
     reportTitle: '举报评论',
     reportReason: '举报理由',
     reportPlaceholder: '请简要说明举报原因',

@@ -104,7 +104,7 @@ module.exports = {
 
     // 发布前做内容审核；草稿不审核，允许自由创作
     if (isPublish) {
-      const check = await moderationService.moderate(`${title}\n${data.content}`, { userId });
+      const check = await moderationService.moderate(`${title}\n${data.content}`, { userId, scene: 'blog' });
       if (!check.pass) {
         throw errors.violation('内容未通过审核，请修改后重新发布', {
           risks: check.risks,
@@ -167,7 +167,7 @@ module.exports = {
 
     const isPublish = data.status === 'published';
     if (isPublish && data.content) {
-      const check = await moderationService.moderate(`${data.title || ''}\n${data.content}`, { userId });
+      const check = await moderationService.moderate(`${data.title || ''}\n${data.content}`, { userId, scene: 'blog' });
       if (!check.pass) {
         throw errors.violation('内容未通过审核，请修改后重新发布', {
           risks: check.risks,
