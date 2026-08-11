@@ -68,12 +68,14 @@ export default function AiAssistant() {
   const [length, setLength] = useState<AiLength>('medium');
   const [count, setCount] = useState(5);
   const [result, setResult] = useState<Record<string, any> | null>(null);
+  const [applied, setApplied] = useState<Set<string>>(new Set());
 
   const disabled = aiStatus?.enabled === false;
 
   const run = async () => {
     setLoading(true);
     setResult(null);
+    setApplied(new Set());
     try {
       if (feature === 'draft') {
         if (!topic.trim()) {
@@ -127,6 +129,11 @@ export default function AiAssistant() {
     antdMessage.success(t('common.copied'));
   };
 
+  const applyAndMark = (key: string, field: 'content' | 'title' | 'summary' | 'keywords', value: string) => {
+    applyToEditor(field, value);
+    setApplied((prev) => new Set(prev).add(key));
+  };
+
   // ---------------- 结果渲染 ----------------
   const renderResult = () => {
     if (loading) {
@@ -148,8 +155,14 @@ export default function AiAssistant() {
             <div className="ai-assistant__block">
               <label>{t('blog.title')}</label>
               <div className="ai-assistant__text">{String(result.title)}</div>
-              <Button size="small" icon={<EditOutlined />} onClick={() => applyToEditor('title', String(result.title))}>
-                {t('ai.titleApplied')}
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                type={applied.has('draft-title') ? 'primary' : 'default'}
+                disabled={applied.has('draft-title')}
+                onClick={() => applyAndMark('draft-title', 'title', String(result.title))}
+              >
+                {applied.has('draft-title') ? t('ai.titleApplied') : t('ai.applyResult')}
               </Button>
             </div>
           )}
@@ -171,12 +184,13 @@ export default function AiAssistant() {
             />
             <div className="ai-assistant__actions">
               <Button
-                type="primary"
+                type={applied.has('draft-content') ? 'primary' : 'default'}
                 size="small"
                 icon={<EditOutlined />}
-                onClick={() => applyToEditor('content', content)}
+                disabled={applied.has('draft-content')}
+                onClick={() => applyAndMark('draft-content', 'content', content)}
               >
-                {t('ai.applied')}
+                {applied.has('draft-content') ? t('ai.applied') : t('ai.applyResult')}
               </Button>
               <Button size="small" icon={<CopyOutlined />} onClick={() => copy(content)}>
                 {t('common.copy')}
@@ -200,20 +214,28 @@ export default function AiAssistant() {
         <List
           size="small"
           dataSource={titles}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Tooltip title={t('ai.selectTitle')} key="apply">
-                  <Button type="link" size="small" onClick={() => applyToEditor('title', item)}>
-                    {t('ai.titleApplied')}
-                  </Button>
-                </Tooltip>,
-                <Button type="link" size="small" icon={<CopyOutlined />} key="copy" onClick={() => copy(item)} />,
-              ]}
-            >
-              {item}
-            </List.Item>
-          )}
+          renderItem={(item) => {
+            const key = `title-${item}`;
+            return (
+              <List.Item
+                actions={[
+                  <Tooltip title={t('ai.selectTitle')} key="apply">
+                    <Button
+                      type="link"
+                      size="small"
+                      disabled={applied.has(key)}
+                      onClick={() => applyAndMark(key, 'title', item)}
+                    >
+                      {applied.has(key) ? t('ai.titleApplied') : t('ai.applyResult')}
+                    </Button>
+                  </Tooltip>,
+                  <Button type="link" size="small" icon={<CopyOutlined />} key="copy" onClick={() => copy(item)} />,
+                ]}
+              >
+                {item}
+              </List.Item>
+            );
+          }}
         />
       );
     }
@@ -230,12 +252,13 @@ export default function AiAssistant() {
             ))}
           </div>
           <Button
-            type="primary"
+            type={applied.has('keywords') ? 'primary' : 'default'}
             size="small"
             icon={<EditOutlined />}
-            onClick={() => applyToEditor('keywords', kws.join(','))}
+            disabled={applied.has('keywords')}
+            onClick={() => applyAndMark('keywords', 'keywords', kws.join(','))}
           >
-            {t('ai.keywordsApplied')}
+            {applied.has('keywords') ? t('ai.keywordsApplied') : t('ai.applyResult')}
           </Button>
         </div>
       );
@@ -247,8 +270,14 @@ export default function AiAssistant() {
         <div className="ai-assistant__result">
           <div className="ai-assistant__text" dangerouslySetInnerHTML={{ __html: nl2br(summary) }} />
           <div className="ai-assistant__actions">
-            <Button type="primary" size="small" icon={<EditOutlined />} onClick={() => applyToEditor('summary', summary)}>
-              {t('ai.summaryApplied')}
+            <Button
+              type={applied.has('summary') ? 'primary' : 'default'}
+              size="small"
+              icon={<EditOutlined />}
+              disabled={applied.has('summary')}
+              onClick={() => applyAndMark('summary', 'summary', summary)}
+            >
+              {applied.has('summary') ? t('ai.summaryApplied') : t('ai.applyResult')}
             </Button>
             <Button size="small" icon={<CopyOutlined />} onClick={() => copy(summary)}>
               {t('common.copy')}
@@ -317,8 +346,14 @@ export default function AiAssistant() {
       <div className="ai-assistant__result">
         <div className="ai-assistant__text" dangerouslySetInnerHTML={{ __html: nl2br(content) }} />
         <div className="ai-assistant__actions">
-          <Button type="primary" size="small" icon={<EditOutlined />} onClick={() => applyToEditor('content', content)}>
-            {t('ai.applied')}
+          <Button
+            type={applied.has(`${feature}-content`) ? 'primary' : 'default'}
+            size="small"
+            icon={<EditOutlined />}
+            disabled={applied.has(`${feature}-content`)}
+            onClick={() => applyAndMark(`${feature}-content`, 'content', content)}
+          >
+            {applied.has(`${feature}-content`) ? t('ai.applied') : t('ai.applyResult')}
           </Button>
           <Button size="small" icon={<CopyOutlined />} onClick={() => copy(content)}>
             {t('common.copy')}
@@ -382,6 +417,7 @@ export default function AiAssistant() {
                   onClick={() => {
                     setFeature(f.value);
                     setResult(null);
+                    setApplied(new Set());
                   }}
                 >
                   {f.label}

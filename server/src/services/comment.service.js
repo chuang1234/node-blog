@@ -12,6 +12,16 @@ const { stripTags } = require('../utils/helper');
 const logger = require('../utils/logger');
 const cache = require('../config/redis');
 
+// 互动（评论/点赞/收藏）后，需要同时失效「列表 / 热门 / 详情」三类缓存。
+// 否则列表缓存（60s）未失效，会让首页与详情显示的阅读/评论/点赞/收藏数长时间不一致。
+async function invalidateBlogCaches(blogId) {
+  await Promise.all([
+    cache.delByPattern('blog:list:*'),
+    cache.del('blog:hot'),
+    cache.del(`blog:detail:${blogId}`),
+  ]);
+}
+
 module.exports = {
   /** 评论列表（含楼中楼） */
   async list(blogId, pageOpt, currentUserId) {
@@ -87,7 +97,7 @@ module.exports = {
     });
 
     await blogDao.incrCounter(blogId, 'comment', 1);
-    await cache.del(`blog:detail:${blogId}`);
+    await invalidateBlogCaches(blogId);
 
     // 异步执行情感分析与自动回复，不阻塞用户提交
     this.postProcess(commentId, blogId, finalContent, userId).catch((err) =>
@@ -146,7 +156,7 @@ module.exports = {
       isAiReply: true,
     });
     await blogDao.incrCounter(blogId, 'comment', 1);
-    await cache.del(`blog:detail:${blogId}`);
+    await invalidateBlogCaches(blogId);
     logger.info(`[AI 自动回复] 已回复评论 #${commentId}`);
   },
 
@@ -190,7 +200,7 @@ module.exports = {
     // 删除根评论会级联删除其下回复，因此重新统计真实数量而非简单减一
     const realCount = await commentDao.countByBlog(comment.blogId);
     await blogDao.setCounter(comment.blogId, 'comment', realCount);
-    await cache.del(`blog:detail:${comment.blogId}`);
+    await invalidateBlogCaches(comment.blogId);
     return true;
   },
 
@@ -228,15 +238,27 @@ module.exports = {
       await interactionDao.removeLike(userId, targetType, targetId);
       if (targetType === 'blog') await blogDao.incrCounter(targetId, 'like', -1);
       else await commentDao.incrLike(targetId, -1);
-      if (targetType === 'blog') await cache.del(`blog:detail:${targetId}`);
-      return { liked: false };
+      if (targetType === 'blog') await invalidateBlogCaches(targetId);
+
+      if (targetType === 'blog') {
+        const counters = await blogDao.getCounters(targetId);
+        return { liked: false, likeCount: counters ? counters.likeCount : 0 };
+      }
+      const comment = await commentDao.findById(targetId);
+      return { liked: false, likeCount: comment ? comment.likeCount : 0 };
     }
 
     await interactionDao.addLike(userId, targetType, targetId);
     if (targetType === 'blog') await blogDao.incrCounter(targetId, 'like', 1);
     else await commentDao.incrLike(targetId, 1);
-    if (targetType === 'blog') await cache.del(`blog:detail:${targetId}`);
-    return { liked: true };
+    if (targetType === 'blog') await invalidateBlogCaches(targetId);
+
+    if (targetType === 'blog') {
+      const counters = await blogDao.getCounters(targetId);
+      return { liked: true, likeCount: counters ? counters.likeCount : 0 };
+    }
+    const comment = await commentDao.findById(targetId);
+    return { liked: true, likeCount: comment ? comment.likeCount : 0 };
   },
 
   /** 收藏或取消收藏 */
@@ -248,13 +270,15 @@ module.exports = {
     if (existed) {
       await interactionDao.removeFavorite(userId, blogId);
       await blogDao.incrCounter(blogId, 'favorite', -1);
-      await cache.del(`blog:detail:${blogId}`);
-      return { favorited: false };
+      await invalidateBlogCaches(blogId);
+      const counters = await blogDao.getCounters(blogId);
+      return { favorited: false, favoriteCount: counters ? counters.favoriteCount : 0 };
     }
     await interactionDao.addFavorite(userId, blogId);
     await blogDao.incrCounter(blogId, 'favorite', 1);
-    await cache.del(`blog:detail:${blogId}`);
-    return { favorited: true };
+    await invalidateBlogCaches(blogId);
+    const counters = await blogDao.getCounters(blogId);
+    return { favorited: true, favoriteCount: counters ? counters.favoriteCount : 0 };
   },
 
   /** 我的收藏 */

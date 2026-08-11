@@ -89,7 +89,6 @@ module.exports = {
 
     return {
       ...blog,
-      viewCount: blog.viewCount + 1,
       tags: tagRows.map((t) => ({ id: t.id, name: t.name, color: t.color })),
       liked: Boolean(liked),
       favorited: Boolean(favorited),

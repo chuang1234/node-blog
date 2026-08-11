@@ -138,7 +138,7 @@ export default function Profile() {
             </Button>
           ) : (
             <Button size="small" onClick={() => changeStatus(r.id, 'offline')}>
-              {t('blog.offline')}
+              {t('blog.takeOffline')}
             </Button>
           )}
           <Popconfirm
@@ -179,12 +179,12 @@ export default function Profile() {
             <Card>
               <Statistic title={t('profile.blogCount')} value={user.blogCount || 0} />
             </Card>
-            <Card>
-              <Statistic title={t('profile.totalViews')} value={0} />
-            </Card>
-            <Card>
-              <Statistic title={t('profile.totalLikes')} value={0} />
-            </Card>
+          <Card>
+            <Statistic title={t('profile.totalViews')} value={formatCount(user.totalViews)} />
+          </Card>
+          <Card>
+            <Statistic title={t('profile.totalLikes')} value={formatCount(user.totalLikes)} />
+          </Card>
           </div>
           <Card className="profile__overview" title={t('profile.basicInfo')}>
             <Descriptions column={1} bordered size="small">

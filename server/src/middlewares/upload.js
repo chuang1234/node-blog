@@ -20,7 +20,10 @@ function createUploader(subDir = 'cover') {
   fs.mkdirSync(destDir, { recursive: true });
 
   const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, destDir),
+    destination: (req, file, cb) => {
+      fs.mkdirSync(destDir, { recursive: true });
+      cb(null, destDir);
+    },
     filename: (req, file, cb) => {
       const ext = path.extname(file.originalname).toLowerCase();
       const safeExt = ALLOWED_EXT.includes(ext) ? ext : '.png';

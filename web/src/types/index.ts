@@ -56,6 +56,8 @@ export interface User {
   status: number;
   aiStyle?: AiStyle;
   blogCount?: number;
+  totalViews?: number;
+  totalLikes?: number;
   createdAt?: string;
 }
 

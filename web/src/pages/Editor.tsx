@@ -3,7 +3,7 @@
  * 支持 Markdown 编辑（编辑/分屏/预览三模式）、封面上传、分类与标签、AI 快捷操作，
  * 并监听全局 AI 助手的「应用到编辑器」事件。
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -60,6 +60,10 @@ export default function Editor() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tagOptions, setTagOptions] = useState<{ value: string; label: string }[]>([]);
   const [mode, setMode] = useState<EditorMode>('split');
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 监听全局 AI 助手「应用到编辑器」
   useEffect(() => {
@@ -139,6 +143,76 @@ export default function Editor() {
       }
     },
   };
+
+  // ---------------- 正文插图 ----------------
+  /** 在光标位置插入文本片段（无焦点时追加到末尾） */
+  const insertAtCursor = useCallback(
+    (snippet: string) => {
+      const ta = textareaRef.current;
+      if (!ta) {
+        setContent((c) => c + snippet);
+        return;
+      }
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      setContent(content.slice(0, start) + snippet + content.slice(end));
+      requestAnimationFrame(() => {
+        ta.focus();
+        const pos = start + snippet.length;
+        ta.setSelectionRange(pos, pos);
+      });
+    },
+    [content]
+  );
+
+  /** 上传图片文件并插入 Markdown 图片语法 */
+  const insertImageFile = useCallback(
+    async (file: File) => {
+      const okType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type);
+      if (!okType) {
+        antdMessage.error(t('editor.imageTypeTip'));
+        return;
+      }
+      if (file.size / 1024 / 1024 > 5) {
+        antdMessage.error(t('editor.imageSizeTip'));
+        return;
+      }
+      setUploadingImage(true);
+      try {
+        const res = await blogApi.uploadImage(file);
+        const alt = file.name.replace(/\.[^.]+$/, '');
+        insertAtCursor(`\n![${alt}](${res.url})\n`);
+        antdMessage.success(t('editor.imageInserted'));
+      } catch {
+        /* 拦截器已提示 */
+      } finally {
+        setUploadingImage(false);
+      }
+    },
+    [insertAtCursor, t]
+  );
+
+  const handleInsertImageClick = () => fileInputRef.current?.click();
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) void insertImageFile(file);
+    e.target.value = '';
+  };
+
+  /** 支持 Ctrl+V 直接粘贴剪贴板中的图片 */
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const files = e.clipboardData?.files;
+      if (!files || !files.length) return;
+      const img = Array.from(files).find((f) => f.type.startsWith('image/'));
+      if (img) {
+        e.preventDefault();
+        void insertImageFile(img);
+      }
+    },
+    [insertImageFile]
+  );
 
   const submit = useCallback(
     async (status: BlogStatus) => {
@@ -328,7 +402,24 @@ export default function Editor() {
               {t('ai.polish')}
             </Button>
           </Tooltip>
+          <Tooltip title={t('editor.insertImageTip')}>
+            <Button
+              size="small"
+              icon={<PictureOutlined />}
+              loading={uploadingImage}
+              onClick={handleInsertImageClick}
+            >
+              {t('editor.insertImage')}
+            </Button>
+          </Tooltip>
         </Space>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          hidden
+          onChange={handleImageSelect}
+        />
         <Segmented
           size="small"
           value={mode}
@@ -342,11 +433,13 @@ export default function Editor() {
       </div>
 
       <div className={`editor__panes editor__panes--${mode}`}>
-        {mode !== 'preview' && (
+          {mode !== 'preview' && (
           <textarea
+            ref={textareaRef}
             className="editor__textarea"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onPaste={handlePaste}
             placeholder={t('blog.contentPlaceholder')}
             spellCheck={false}
           />

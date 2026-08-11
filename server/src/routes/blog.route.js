@@ -11,6 +11,7 @@ const { createUploader } = require('../middlewares/upload');
 
 const router = express.Router();
 const coverUploader = createUploader('cover');
+const contentUploader = createUploader('content');
 
 /**
  * @swagger
@@ -42,6 +43,9 @@ router.get('/mine', auth(), validate({ query: schema.listQuery }), controller.my
 
 /** 上传封面图 */
 router.post('/cover', auth(), coverUploader.single('file'), controller.uploadCover);
+
+/** 上传正文配图（用于文章内插图） */
+router.post('/image', auth(), contentUploader.single('file'), controller.uploadImage);
 
 /**
  * @swagger

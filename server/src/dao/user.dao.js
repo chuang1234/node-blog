@@ -8,9 +8,16 @@ const SAFE_FIELDS = `id, username, email, nickname, avatar, bio, role, status, a
   last_login_at AS lastLoginAt, created_at AS createdAt, updated_at AS updatedAt`;
 
 module.exports = {
-  /** 按 ID 查询（含密码字段，供内部使用） */
+  /** 按 ID 查询（含密码字段与概览聚合，供内部使用） */
   findById(id) {
-    return db.queryOne(`SELECT ${SAFE_FIELDS}, password FROM users WHERE id = ?`, [id]);
+    return db.queryOne(
+      `SELECT ${SAFE_FIELDS}, password,
+        (SELECT COUNT(*) FROM blogs b WHERE b.user_id = users.id) AS blogCount,
+        (SELECT COALESCE(SUM(b.view_count), 0) FROM blogs b WHERE b.user_id = users.id) AS totalViews,
+        (SELECT COALESCE(SUM(b.like_count), 0) FROM blogs b WHERE b.user_id = users.id) AS totalLikes
+       FROM users WHERE id = ?`,
+      [id]
+    );
   },
 
   /** 按用户名或邮箱查询（登录用） */

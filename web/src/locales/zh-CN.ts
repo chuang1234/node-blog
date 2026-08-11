@@ -104,6 +104,7 @@ export default {
     draft: '草稿',
     published: '已发布',
     offline: '已下线',
+    takeOffline: '下线',
     saveDraft: '存为草稿',
     publish: '发布文章',
     update: '更新文章',
@@ -378,5 +379,13 @@ export default {
     serverDesc: '服务器开小差了，请稍后重试',
     backHome: '返回首页',
     retry: '重试',
+  },
+
+  editor: {
+    insertImage: '插入图片',
+    insertImageTip: '插入正文配图（也可直接 Ctrl+V 粘贴剪贴板图片）',
+    imageInserted: '图片已插入',
+    imageTypeTip: '仅支持 jpg / png / gif / webp 格式的图片',
+    imageSizeTip: '图片大小不能超过 5MB',
   },
 };

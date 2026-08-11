@@ -64,8 +64,10 @@ module.exports = {
   /** 我的收藏列表 */
   async findFavoritePage(userId, { offset = 0, pageSize = 10 }) {
     const list = await db.query(
-      `SELECT b.id, b.title, b.summary, b.cover, b.view_count AS viewCount,
-              b.like_count AS likeCount, b.published_at AS publishedAt,
+      `SELECT b.id, b.title, b.summary, b.cover, b.status, b.word_count AS wordCount,
+              b.view_count AS viewCount, b.like_count AS likeCount,
+              b.comment_count AS commentCount, b.favorite_count AS favoriteCount,
+              b.published_at AS publishedAt, b.created_at AS createdAt,
               u.nickname AS authorName, f.created_at AS favoritedAt
        FROM favorites f
        JOIN blogs b ON b.id = f.blog_id

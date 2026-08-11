@@ -103,6 +103,12 @@ module.exports = {
     return success(res, { url: toPublicUrl('cover', req.file.filename) }, '封面上传成功');
   }),
 
+  /** 上传正文配图 */
+  uploadImage: asyncHandler(async (req, res) => {
+    if (!req.file) return success(res, null, '请选择要上传的图片');
+    return success(res, { url: toPublicUrl('content', req.file.filename) }, '图片上传成功');
+  }),
+
   // ---------------- 管理端 ----------------
   adminList: asyncHandler(async (req, res) => {
     const { pageNum, pageSize, offset } = normalizePage(req.query);

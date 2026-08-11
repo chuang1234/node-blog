@@ -165,6 +165,14 @@ module.exports = {
     return db.execute(`UPDATE blogs SET ${col} = GREATEST(0, ${col} + ?) WHERE id = ?`, [delta, id]);
   },
 
+  /** 快速读取点赞/收藏计数（用于点赞/收藏切换后返回最新值） */
+  getCounters(id) {
+    return db.queryOne(
+      'SELECT like_count AS likeCount, favorite_count AS favoriteCount FROM blogs WHERE id = ?',
+      [id]
+    );
+  },
+
   /** 直接设置某个计数字段为准确值（用于删除后重算） */
   setCounter(id, field, value) {
     const allow = { like: 'like_count', comment: 'comment_count', favorite: 'favorite_count' };
@@ -224,7 +232,7 @@ module.exports = {
   /** 热门博客 */
   findHot(limit = 5) {
     return db.query(
-      `SELECT b.id, b.title, b.view_count AS viewCount, b.like_count AS likeCount
+      `SELECT b.id, b.title, b.cover, b.view_count AS viewCount, b.like_count AS likeCount
        FROM blogs b WHERE b.status = 'published'
        ORDER BY b.view_count DESC, b.like_count DESC LIMIT ${Number(limit)}`
     );

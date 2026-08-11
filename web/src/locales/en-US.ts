@@ -106,6 +106,7 @@ const enUS: typeof zhCN = {
     draft: 'Draft',
     published: 'Published',
     offline: 'Offline',
+    takeOffline: 'Take offline',
     saveDraft: 'Save draft',
     publish: 'Publish',
     update: 'Update',
@@ -380,6 +381,14 @@ const enUS: typeof zhCN = {
     serverDesc: 'Something went wrong on our side, please try again later',
     backHome: 'Back to home',
     retry: 'Retry',
+  },
+
+  editor: {
+    insertImage: 'Insert Image',
+    insertImageTip: 'Insert an inline image (or paste from clipboard with Ctrl+V)',
+    imageInserted: 'Image inserted',
+    imageTypeTip: 'Only jpg / png / gif / webp images are supported',
+    imageSizeTip: 'Image size must be within 5MB',
   },
 };
 

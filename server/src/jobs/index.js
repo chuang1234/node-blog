@@ -49,7 +49,7 @@ async function runLogCleanup() {
 /** 刷新热门文章缓存 */
 async function runRefreshHotCache() {
   try {
-    await cache.delByPattern('blog:hot:*');
+    await cache.delByPattern('blog:hot*');
     await cache.delByPattern('stats:*');
     logger.debug('[定时任务] 热门缓存已刷新');
   } catch (err) {

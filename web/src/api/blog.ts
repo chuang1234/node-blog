@@ -36,6 +36,9 @@ export const blogApi = {
   /** 上传封面 */
   uploadCover: (file: File) => request.upload<{ url: string }>('/api/blogs/cover', file),
 
+  /** 上传正文配图 */
+  uploadImage: (file: File) => request.upload<{ url: string }>('/api/blogs/image', file),
+
   // ---------------- 管理端 ----------------
 
   adminList: (params: BlogListQuery) => request.get<PageData<Blog>>('/api/admin/blogs', params),
