@@ -5,6 +5,7 @@
  */
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import {
   Avatar,
   Button,
@@ -29,6 +30,7 @@ import { commentApi, aiApi } from '@/api';
 import type { Comment, Sentiment } from '@/types';
 import { useAppSelector } from '@/store';
 import { getImageUrl, formatDate } from '@/utils/format';
+import UserLink from '@/components/UserLink';
 import './CommentSection.less';
 
 const SENTIMENT_COLOR: Record<Sentiment, string> = {
@@ -158,12 +160,18 @@ export default function CommentSection({ blogId }: Props) {
 
   const renderComment = (c: Comment, depth: number) => (
     <div className={`comment-item ${depth > 0 ? 'is-reply' : ''}`} key={c.id}>
-      <Avatar src={getImageUrl(c.userAvatar) || undefined} size={36}>
-        {c.userName?.[0]}
-      </Avatar>
+      <UserLink userId={c.userId} name={c.userName} avatar={c.userAvatar} size={36} showName={false} />
       <div className="comment-item__body">
         <div className="comment-item__head">
-          <span className="comment-item__name">{c.userName}</span>
+          <Link
+            to={`/user/${c.userId}`}
+            className="comment-item__name"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {c.userName}
+          </Link>
           {depth > 0 && c.parentId && c.rootId && c.parentId !== c.rootId && c.replyToName && (
             <span className="comment-item__reply-to">
               {t('comment.replyTo', { name: c.replyToName })}

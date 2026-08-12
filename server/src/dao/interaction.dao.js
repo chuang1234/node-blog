@@ -68,7 +68,7 @@ module.exports = {
               b.view_count AS viewCount, b.like_count AS likeCount,
               b.comment_count AS commentCount, b.favorite_count AS favoriteCount,
               b.published_at AS publishedAt, b.created_at AS createdAt,
-              u.nickname AS authorName, f.created_at AS favoritedAt
+              u.nickname AS authorName, u.avatar AS authorAvatar, f.created_at AS favoritedAt
        FROM favorites f
        JOIN blogs b ON b.id = f.blog_id
        LEFT JOIN users u ON u.id = b.user_id
@@ -77,6 +77,30 @@ module.exports = {
       [userId]
     );
     const countRow = await db.queryOne('SELECT COUNT(*) AS total FROM favorites WHERE user_id = ?', [userId]);
+    return { list, total: countRow ? countRow.total : 0 };
+  },
+
+  /** 用户点赞过的文章（公开主页展示，仅已发布） */
+  async findLikedBlogsPage(userId, { offset = 0, pageSize = 10 }) {
+    const list = await db.query(
+      `SELECT b.id, b.title, b.summary, b.cover, b.status, b.word_count AS wordCount,
+              b.view_count AS viewCount, b.like_count AS likeCount,
+              b.comment_count AS commentCount, b.favorite_count AS favoriteCount,
+              b.published_at AS publishedAt, b.created_at AS createdAt,
+              u.nickname AS authorName, u.avatar AS authorAvatar, l.created_at AS likedAt
+       FROM likes l
+       JOIN blogs b ON b.id = l.target_id AND l.target_type = 'blog'
+       LEFT JOIN users u ON u.id = b.user_id
+       WHERE l.user_id = ? AND b.status = 'published'
+       ORDER BY l.created_at DESC LIMIT ${Number(pageSize)} OFFSET ${Number(offset)}`,
+      [userId]
+    );
+    const countRow = await db.queryOne(
+      `SELECT COUNT(*) AS total FROM likes l
+       JOIN blogs b ON b.id = l.target_id AND l.target_type = 'blog'
+       WHERE l.user_id = ? AND b.status = 'published'`,
+      [userId]
+    );
     return { list, total: countRow ? countRow.total : 0 };
   },
 

@@ -1,0 +1,75 @@
+# AI Agent 博客系统 · 一键容器化部署
+# 架构：nginx(前端静态 + 反向代理)  ->  server(Node/Express)  ->  db(MySQL)
+# 用法：
+#   cp .env.example .env   # 按需修改
+#   docker compose build
+#   docker compose up -d
+services:
+  # ---------- 数据库 ----------
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Chuang@123456}
+      MYSQL_DATABASE: ${DB_NAME:-ai_blog}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD:-Chuang@123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------- 后端服务 ----------
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # 连接 compose 内的数据库服务（服务名即主机名）
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-Chuang@123456}
+      DB_NAME: ${DB_NAME:-ai_blog}
+      # 单机部署关闭 Redis，自动降级为进程内存缓存（如需多实例再开启）
+      REDIS_ENABLED: "false"
+      JWT_SECRET: ${JWT_SECRET:-please_change_this_to_a_long_random_string}
+      # 上传资源使用相对路径，由 nginx 反代 /uploads 提供，跨域名也无需改
+      STATIC_BASE_URL: ""
+      # 同源部署无需跨域；若前后端不同域，填前端站点地址（逗号分隔可多个）
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      # AI 服务商：mock(离线规则引擎) / openai / qwen / ernie / deepseek
+      AI_PROVIDER: ${AI_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      QWEN_API_KEY: ${QWEN_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # 上传的图片持久化，避免容器重建后丢失
+      - server_uploads:/app/uploads
+
+  # ---------- 前端 + 反向代理 ----------
+  web:
+    build: ./web
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    depends_on:
+      - server
+    volumes:
+      # 运行时挂载 nginx 配置，修改反代规则无需重新 build 镜像
+      - ./web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  db_data:
+  server_uploads:

@@ -269,6 +269,14 @@ export default {
     blogCount: '文章',
     totalViews: '总阅读',
     totalLikes: '获赞',
+    userArticles: 'TA的文章',
+    userLikes: 'TA的点赞',
+    userFavorites: 'TA的收藏',
+  },
+
+  user: {
+    notFound: '用户不存在或已被禁用',
+    empty: '这里还没有内容',
   },
 
   admin: {

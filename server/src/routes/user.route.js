@@ -55,4 +55,8 @@ router.post('/me/avatar', auth(), avatarUploader.single('file'), controller.uplo
  */
 router.get('/:id', validate({ params: common.idParam }), controller.publicProfile);
 
+/** 他人的收藏 / 点赞列表（公开，无需登录） */
+router.get('/:id/favorites', validate({ params: common.idParam }), controller.userFavorites);
+router.get('/:id/likes', validate({ params: common.idParam }), controller.userLikes);
+
 module.exports = router;

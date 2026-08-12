@@ -3,9 +3,11 @@
  */
 import { request } from '@/utils/request';
 import type {
+  Blog,
   LoginPayload,
   LoginResult,
   PageData,
+  PageQuery,
   RegisterPayload,
   UpdateProfilePayload,
   User,
@@ -33,6 +35,14 @@ export const userApi = {
 
   /** 查看他人公开主页 */
   publicProfile: (id: number) => request.get<User>(`/api/users/${id}`),
+
+  /** 查看他人的收藏列表（公开） */
+  userFavorites: (id: number, params: PageQuery) =>
+    request.get<PageData<Blog>>(`/api/users/${id}/favorites`, params),
+
+  /** 查看他人点赞过的文章（公开） */
+  userLikes: (id: number, params: PageQuery) =>
+    request.get<PageData<Blog>>(`/api/users/${id}/likes`, params),
 
   // ---------------- 管理端 ----------------
 

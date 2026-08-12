@@ -58,6 +58,7 @@
 
 .comment-item {
   display: flex;
+  align-items: flex-start;
   gap: 10px;
 
   &.is-reply {
@@ -79,6 +80,13 @@
   &__name {
     font-weight: 600;
     color: @text;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #1677ff;
+      text-decoration: underline;
+    }
   }
 
   &__reply-to {

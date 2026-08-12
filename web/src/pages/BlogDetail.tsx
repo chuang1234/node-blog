@@ -3,13 +3,12 @@
  * 展示正文（Markdown 渲染）、作者信息、点赞/收藏/分享、相关推荐，并嵌入评论区。
  */
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
   Space,
   Tag,
-  Avatar,
   Divider,
   Tooltip,
   message as antdMessage,
@@ -34,7 +33,8 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 import SmartImage from '@/components/SmartImage';
 import BlogCard from '@/components/BlogCard';
 import CommentSection from '@/components/CommentSection';
-import { formatCount, formatDate, readMinutes, getImageUrl } from '@/utils/format';
+import UserLink from '@/components/UserLink';
+import { formatCount, formatDate, readMinutes } from '@/utils/format';
 import './BlogDetail.less';
 
 export default function BlogDetail() {
@@ -131,12 +131,13 @@ export default function BlogDetail() {
 
           <div className="blog-detail__meta">
             <Space size={10} wrap>
-              <Link to={user ? '/profile' : '/login'} className="blog-detail__author">
-                <Avatar src={getImageUrl(blog.authorAvatar) || undefined} size={28}>
-                  {blog.authorName?.[0]}
-                </Avatar>
-                <span>{blog.authorName}</span>
-              </Link>
+              <UserLink
+                userId={blog.userId}
+                name={blog.authorName}
+                avatar={blog.authorAvatar}
+                size={28}
+                className="blog-detail__author"
+              />
               <span className="blog-detail__meta-item">
                 <CalendarOutlined /> {formatDate(blog.publishedAt || blog.createdAt, 'YYYY-MM-DD')}
               </span>

@@ -2,6 +2,7 @@
  * 用户控制器
  */
 const userService = require('../services/user.service');
+const interactionDao = require('../dao/interaction.dao');
 const { success, page } = require('../utils/response');
 const { asyncHandler } = require('../middlewares/error');
 const { normalizePage } = require('../utils/helper');
@@ -28,6 +29,20 @@ module.exports = {
   publicProfile: asyncHandler(async (req, res) => {
     const user = await userService.getPublicProfile(req.params.id);
     return success(res, user);
+  }),
+
+  /** 查看他人的收藏列表（公开） */
+  userFavorites: asyncHandler(async (req, res) => {
+    const { pageNum, pageSize, offset } = normalizePage(req.query);
+    const { list, total } = await interactionDao.findFavoritePage(req.params.id, { offset, pageSize });
+    return page(res, { list, total, pageNum, pageSize });
+  }),
+
+  /** 查看他人点赞过的文章（公开，仅已发布） */
+  userLikes: asyncHandler(async (req, res) => {
+    const { pageNum, pageSize, offset } = normalizePage(req.query);
+    const { list, total } = await interactionDao.findLikedBlogsPage(req.params.id, { offset, pageSize });
+    return page(res, { list, total, pageNum, pageSize });
   }),
 
   updateProfile: asyncHandler(async (req, res) => {

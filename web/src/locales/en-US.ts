@@ -271,6 +271,14 @@ const enUS: typeof zhCN = {
     blogCount: 'Posts',
     totalViews: 'Views',
     totalLikes: 'Likes',
+    userArticles: 'Articles',
+    userLikes: 'Likes',
+    userFavorites: 'Favorites',
+  },
+
+  user: {
+    notFound: 'User not found or disabled',
+    empty: 'Nothing here yet',
   },
 
   admin: {

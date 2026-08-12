@@ -121,7 +121,9 @@ module.exports = {
   findPublicById(id) {
     return db.queryOne(
       `SELECT id, username, nickname, avatar, bio, created_at AS createdAt,
-        (SELECT COUNT(*) FROM blogs b WHERE b.user_id = users.id AND b.status = 'published') AS blogCount
+        (SELECT COUNT(*) FROM blogs b WHERE b.user_id = users.id AND b.status = 'published') AS blogCount,
+        (SELECT COALESCE(SUM(b.view_count), 0) FROM blogs b WHERE b.user_id = users.id AND b.status = 'published') AS totalViews,
+        (SELECT COALESCE(SUM(b.like_count), 0) FROM blogs b WHERE b.user_id = users.id AND b.status = 'published') AS totalLikes
        FROM users WHERE id = ? AND status = 1`,
       [id]
     );

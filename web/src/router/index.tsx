@@ -17,6 +17,7 @@ import Editor from '@/pages/Editor';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Profile from '@/pages/Profile';
+import UserPage from '@/pages/UserPage';
 import Search from '@/pages/Search';
 import NotFound from '@/pages/NotFound';
 import Forbidden from '@/pages/Forbidden';
@@ -46,6 +47,7 @@ export function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/user/:id" element={<UserPage />} />
         <Route
           path="/write"
           element={

@@ -16,6 +16,7 @@ import {
 import type { Blog } from '@/types';
 import { formatCount, formatDate, readMinutes } from '@/utils/format';
 import SmartImage from './SmartImage';
+import UserLink from './UserLink';
 import './BlogCard.less';
 
 interface Props {
@@ -66,15 +67,13 @@ export default function BlogCard({ blog, showAuthor = true }: Props) {
 
         <div className="blog-card__meta">
           {showAuthor && (
-            <Space size={6} className="blog-card__author">
-              <SmartImage
-                src={blog.authorAvatar}
-                alt={blog.authorName}
-                type="avatar"
-                className="blog-card__avatar"
-              />
-              <span>{blog.authorName}</span>
-            </Space>
+            <UserLink
+              userId={blog.userId}
+              name={blog.authorName}
+              avatar={blog.authorAvatar}
+              size={24}
+              className="blog-card__author"
+            />
           )}
           <Space size={14} className="blog-card__stats">
             <span title={t('blog.views')}>

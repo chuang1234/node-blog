@@ -1,0 +1,65 @@
+.user-page {
+  padding-top: 24px;
+  padding-bottom: 40px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px;
+    background: var(--bg-elevated, #fff);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 200px;
+
+    h2 {
+      margin: 0 0 4px;
+      font-size: 22px;
+    }
+  }
+
+  &__username {
+    margin: 0 0 8px;
+    color: #888;
+    font-size: 13px;
+  }
+
+  &__bio {
+    margin: 0 0 8px;
+    color: #555;
+  }
+
+  &__joined {
+    font-size: 12px;
+    color: #999;
+  }
+
+  &__stats {
+    display: flex;
+    gap: 28px;
+  }
+
+  &__tabs {
+    background: var(--bg-elevated, #fff);
+    padding: 0 16px 16px;
+    border-radius: 12px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  &__more {
+    text-align: center;
+    padding: 16px 0 8px;
+  }
+}
