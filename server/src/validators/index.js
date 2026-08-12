@@ -46,7 +46,7 @@ const user = {
     nickname: Joi.string().max(50).allow(''),
     bio: Joi.string().max(500).allow(''),
     email: Joi.string().email().max(120),
-    avatar: Joi.string().uri().max(255).allow(''),
+    avatar: Joi.string().uri({ allowRelative: true }).max(255).allow(''),
     aiStyle: Joi.string().valid(...STYLES),
   }).min(1).messages({ 'object.min': '请至少修改一项内容' }),
 

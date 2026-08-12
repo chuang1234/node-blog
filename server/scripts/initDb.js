@@ -162,6 +162,35 @@ async function resetDefaultPasswords(conn) {
   }
 }
 
+/**
+ * 用环境变量覆盖 seed.sql 中的 AI 默认配置
+ * 说明：seed.sql 中的 ai.provider/ai.model 是本地开发兜底值(mock)。
+ * 部署时若在 .env 中显式指定了 AI_PROVIDER/AI_MODEL，应以环境变量为准。
+ */
+async function applyEnvOverrides(conn) {
+  const overrides = [];
+  if (process.env.AI_PROVIDER !== undefined && process.env.AI_PROVIDER !== '') {
+    overrides.push({ key: 'ai.provider', value: process.env.AI_PROVIDER });
+  }
+  if (process.env.AI_MODEL !== undefined && process.env.AI_MODEL !== '') {
+    overrides.push({ key: 'ai.model', value: process.env.AI_MODEL });
+  }
+  if (overrides.length === 0) return;
+
+  log.step('根据环境变量覆盖 AI 默认配置');
+  for (const { key, value } of overrides) {
+    const [result] = await conn.query(
+      'UPDATE `ai_configs` SET `config_value` = ? WHERE `config_key` = ?',
+      [value, key]
+    );
+    if (result.affectedRows > 0) {
+      log.ok(`${key} → ${c.yellow}${value}${c.reset}`);
+    } else {
+      log.warn(`未找到配置项 ${key}，跳过`);
+    }
+  }
+}
+
 /** 校验初始化结果 */
 async function verify(conn) {
   log.step('校验初始化结果');
@@ -223,6 +252,7 @@ async function main() {
     if (!NO_SEED) {
       await runSqlFile(conn, path.resolve(__dirname, '../sql/seed.sql'), 'seed.sql (种子数据)');
       await resetDefaultPasswords(conn);
+      await applyEnvOverrides(conn);
     } else {
       log.warn('已跳过种子数据导入 (--no-seed)');
     }
