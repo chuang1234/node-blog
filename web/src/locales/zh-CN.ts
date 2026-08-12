@@ -133,6 +133,8 @@ export default {
     sortHot: '最热',
     sortComment: '评论最多',
     sortUpdated: '最近更新',
+    gridView: '卡片',
+    listView: '列表',
     emptyList: '还没有文章，去写第一篇吧',
     notFound: '文章不存在或已被删除',
     editorMarkdown: 'Markdown',

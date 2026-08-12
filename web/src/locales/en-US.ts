@@ -135,6 +135,8 @@ const enUS: typeof zhCN = {
     sortHot: 'Hottest',
     sortComment: 'Most discussed',
     sortUpdated: 'Recently updated',
+    gridView: 'Cards',
+    listView: 'List',
     emptyList: 'No posts yet. Write the first one!',
     notFound: 'This post does not exist or has been removed',
     editorMarkdown: 'Markdown',

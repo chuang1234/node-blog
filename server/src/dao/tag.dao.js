@@ -54,16 +54,18 @@ module.exports = {
     return result.affectedRows;
   },
 
-  /** 重算引用计数 */
+  /** 重算引用计数（仅统计已发布文章，与分类计数口径保持一致） */
   refreshCount(ids = []) {
+    // 只统计关联且已发布的博客，避免下线的文章仍计入标签数
+    const join = "blog_tags bt JOIN blogs b ON b.id = bt.blog_id AND b.status = 'published'";
     if (!ids.length) {
       return db.execute(
-        'UPDATE tags t SET t.ref_count = (SELECT COUNT(*) FROM blog_tags bt WHERE bt.tag_id = t.id)'
+        `UPDATE tags t SET t.ref_count = (SELECT COUNT(*) FROM ${join} WHERE bt.tag_id = t.id)`
       );
     }
     const placeholders = ids.map(() => '?').join(',');
     return db.execute(
-      `UPDATE tags t SET t.ref_count = (SELECT COUNT(*) FROM blog_tags bt WHERE bt.tag_id = t.id)
+      `UPDATE tags t SET t.ref_count = (SELECT COUNT(*) FROM ${join} WHERE bt.tag_id = t.id)
        WHERE t.id IN (${placeholders})`,
       ids
     );

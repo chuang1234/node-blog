@@ -6,10 +6,11 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Select, Tag, Spin, Empty, Pagination, Card, Space, Segmented } from 'antd';
-import { FireOutlined, TagsOutlined, ThunderboltOutlined, EyeOutlined } from '@ant-design/icons';
+import { FireOutlined, TagsOutlined, ThunderboltOutlined, EyeOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { blogApi, categoryApi, aiApi } from '@/api';
 import type { Blog, Category, Tag as TagType, BlogListQuery } from '@/types';
 import BlogCard from '@/components/BlogCard';
+import BlogListItem from '@/components/BlogListItem';
 import SmartImage from '@/components/SmartImage';
 import { formatCount } from '@/utils/format';
 import './Home.less';
@@ -33,6 +34,15 @@ export default function Home() {
   const tagId = searchParams.get('tagId') || '';
   const orderBy = (searchParams.get('orderBy') as BlogListQuery['orderBy']) || 'latest';
   const pageNum = Number(searchParams.get('pageNum') || '1');
+
+  /** 博客显示风格：卡片网格 / 每行一条列表，偏好持久化到 localStorage */
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(
+    () => (localStorage.getItem(VIEW_MODE_KEY) as 'grid' | 'list') || 'grid'
+  );
+  const changeViewMode = (mode: 'grid' | 'list') => {
+    setViewMode(mode);
+    localStorage.setItem(VIEW_MODE_KEY, mode);
+  };
 
   const fetchList = useCallback(async () => {
     setLoading(true);
@@ -100,6 +110,15 @@ export default function Home() {
               ]}
             />
           </Space>
+          <Segmented
+            className="home__view-switch"
+            value={viewMode}
+            onChange={(v) => changeViewMode(v as 'grid' | 'list')}
+            options={[
+              { value: 'grid', icon: <AppstoreOutlined />, label: t('blog.gridView') },
+              { value: 'list', icon: <UnorderedListOutlined />, label: t('blog.listView') },
+            ]}
+          />
           {keyword && <span className="home__keyword">“{keyword}”</span>}
         </div>
 
@@ -134,10 +153,14 @@ export default function Home() {
           {list.length === 0 && !loading ? (
             <Empty description={t('blog.emptyList')} style={{ padding: '60px 0' }} />
           ) : (
-            <div className="home__grid">
-              {list.map((blog) => (
-                <BlogCard key={blog.id} blog={blog} />
-              ))}
+            <div className={viewMode === 'grid' ? 'home__grid' : 'home__list'}>
+              {list.map((blog) =>
+                viewMode === 'grid' ? (
+                  <BlogCard key={blog.id} blog={blog} />
+                ) : (
+                  <BlogListItem key={blog.id} blog={blog} />
+                )
+              )}
             </div>
           )}
         </Spin>
@@ -210,3 +233,6 @@ export default function Home() {
 
 /** 标签云收起时最多展示的标签数量 */
 const TAG_COLLAPSED = 12;
+
+/** 博客显示风格偏好持久化键 */
+const VIEW_MODE_KEY = 'blog_view_mode';

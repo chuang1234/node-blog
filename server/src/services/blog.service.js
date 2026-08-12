@@ -26,6 +26,14 @@ async function invalidateCache(blogId) {
   ]);
 }
 
+/**
+ * 博客的增删改、状态变化都会影响标签/分类的「已发布文章数」，
+ * 需同步失效前端展示用的标签云、分类列表缓存，否则首页数字不会刷新
+ */
+async function invalidateMetaCache() {
+  await Promise.all([cache.delByPattern('tag:*'), cache.del('category:all')]);
+}
+
 /** 给博客列表挂载标签与当前用户的互动状态 */
 async function attachExtras(list, currentUserId) {
   if (!list.length) return list;
@@ -154,6 +162,7 @@ module.exports = {
     if (data.categoryId) await categoryDao.refreshCount(data.categoryId);
 
     await invalidateCache();
+    await invalidateMetaCache();
     return blogDao.findById(blogId);
   },
 
@@ -206,6 +215,7 @@ module.exports = {
     }
 
     await invalidateCache(id);
+    await invalidateMetaCache();
     return blogDao.findById(id);
   },
 
@@ -219,6 +229,7 @@ module.exports = {
     await blogDao.remove(id);
     await tagDao.refreshCount();
     await invalidateCache(id);
+    await invalidateMetaCache();
     return true;
   },
 
@@ -232,7 +243,11 @@ module.exports = {
     const payload = { status };
     if (status === 'published' && blog.status !== 'published') payload.publishedAt = new Date();
     await blogDao.update(id, payload);
+    // 发布状态变化会改变标签/分类的「已发布文章数」，需重算并失效对应缓存
+    await tagDao.refreshCount();
+    if (blog.categoryId) await categoryDao.refreshCount(blog.categoryId);
     await invalidateCache(id);
+    await invalidateMetaCache();
     return true;
   },
 

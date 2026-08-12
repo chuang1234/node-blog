@@ -57,6 +57,16 @@
     gap: @gap;
   }
 
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: @gap;
+  }
+
+  &__view-switch {
+    flex-shrink: 0;
+  }
+
   &__pager {
     .flex-center();
     margin-top: @gap-lg;
