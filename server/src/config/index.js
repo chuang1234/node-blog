@@ -30,7 +30,13 @@ const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
-  staticBaseUrl: process.env.STATIC_BASE_URL || 'http://localhost:3000',
+  // 用 !== undefined 区分「未设置」与「显式留空」：
+  // Docker 部署时 STATIC_BASE_URL 设为空字符串 -> 走相对路径 /uploads/...（由 nginx 反代）；
+  // 本地开发不设置该变量 -> 默认 http://localhost:3000（与本地 server 同域）。
+  staticBaseUrl:
+    process.env.STATIC_BASE_URL !== undefined
+      ? process.env.STATIC_BASE_URL
+      : 'http://localhost:3000',
 
   db: {
     host: process.env.DB_HOST || '127.0.0.1',
