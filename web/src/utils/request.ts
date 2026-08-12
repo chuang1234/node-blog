@@ -121,7 +121,9 @@ instance.interceptors.response.use(
     if (status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
-      if (!redirecting && !location.pathname.startsWith('/login')) {
+      // silent 请求（如 App 启动时的 fetchMe）只清理登录态，不自动跳转登录页，
+      // 避免未登录用户访问公开页面（如分享的文章链接）时被强制甩到登录页
+      if (!config.silent && !redirecting && !location.pathname.startsWith('/login')) {
         redirecting = true;
         message.warning(text || '登录已失效，请重新登录');
         const redirect = encodeURIComponent(location.pathname + location.search);

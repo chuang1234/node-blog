@@ -87,6 +87,8 @@ const enUS: typeof zhCN = {
     registerSuccess: 'Account created, you are now signed in',
     logoutSuccess: 'Signed out',
     demoHint: 'Demo accounts: admin / admin123 (admin), demo / demo123',
+    loginRequiredTitle: 'Sign in required',
+    loginRequiredDesc: 'Sign in to like, bookmark, follow authors and join the conversation.',
   },
 
   blog: {

@@ -3,7 +3,7 @@
  * 展示正文（Markdown 渲染）、作者信息、点赞/收藏/分享、相关推荐，并嵌入评论区。
  */
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons';
 import { blogApi, commentApi } from '@/api';
 import type { Blog } from '@/types';
-import { useAppSelector } from '@/store';
+import { useRequireLogin } from '@/hooks/useRequireLogin';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import SmartImage from '@/components/SmartImage';
 import BlogCard from '@/components/BlogCard';
@@ -40,8 +40,7 @@ import './BlogDetail.less';
 export default function BlogDetail() {
   const { id } = useParams();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const user = useAppSelector((s) => s.auth.user);
+  const requireLogin = useRequireLogin();
 
   const [blog, setBlog] = useState<Blog | null>(null);
   const [related, setRelated] = useState<Blog[]>([]);
@@ -74,10 +73,7 @@ export default function BlogDetail() {
   }, [blogId]);
 
   const onLike = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+    if (!requireLogin()) return;
     try {
       const res = await commentApi.toggleLike('blog', blogId);
       setLiked(res.liked);
@@ -88,10 +84,7 @@ export default function BlogDetail() {
   };
 
   const onFavorite = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+    if (!requireLogin()) return;
     try {
       const res = await commentApi.toggleFavorite(blogId);
       setFavorited(res.favorited);

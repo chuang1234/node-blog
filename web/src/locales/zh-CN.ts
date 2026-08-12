@@ -85,6 +85,8 @@ export default {
     registerSuccess: '注册成功，已自动登录',
     logoutSuccess: '已退出登录',
     demoHint: '演示账号：admin / admin123（管理员）、demo / demo123',
+    loginRequiredTitle: '请先登录',
+    loginRequiredDesc: '登录后即可点赞、收藏、关注作者，并与大家互动交流。',
   },
 
   blog: {
