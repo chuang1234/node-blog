@@ -16,8 +16,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ---------------------------------------------------------------------
 -- 1. 用户表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `username`    VARCHAR(50)     NOT NULL                COMMENT '用户名(登录账号)',
   `email`       VARCHAR(120)    NOT NULL                COMMENT '邮箱',
@@ -40,8 +39,7 @@ CREATE TABLE `users` (
 -- ---------------------------------------------------------------------
 -- 2. 分类表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `categories`;
-CREATE TABLE `categories` (
+CREATE TABLE IF NOT EXISTS `categories` (
   `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '分类ID',
   `name`        VARCHAR(50)  NOT NULL                COMMENT '分类名称',
   `slug`        VARCHAR(60)  NOT NULL                COMMENT '英文别名(URL友好)',
@@ -59,8 +57,7 @@ CREATE TABLE `categories` (
 -- ---------------------------------------------------------------------
 -- 3. 标签表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `tags`;
-CREATE TABLE `tags` (
+CREATE TABLE IF NOT EXISTS `tags` (
   `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '标签ID',
   `name`       VARCHAR(40)  NOT NULL                COMMENT '标签名称',
   `color`      VARCHAR(20)  NOT NULL DEFAULT 'blue' COMMENT '展示颜色',
@@ -74,8 +71,7 @@ CREATE TABLE `tags` (
 -- ---------------------------------------------------------------------
 -- 4. 博客表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `blogs`;
-CREATE TABLE `blogs` (
+CREATE TABLE IF NOT EXISTS `blogs` (
   `id`             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '博客ID',
   `user_id`        BIGINT UNSIGNED NOT NULL                COMMENT '作者ID',
   `category_id`    INT UNSIGNED    NULL                    COMMENT '分类ID',
@@ -110,8 +106,7 @@ CREATE TABLE `blogs` (
 -- ---------------------------------------------------------------------
 -- 5. 博客-标签关联表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `blog_tags`;
-CREATE TABLE `blog_tags` (
+CREATE TABLE IF NOT EXISTS `blog_tags` (
   `blog_id` BIGINT UNSIGNED NOT NULL COMMENT '博客ID',
   `tag_id`  INT UNSIGNED    NOT NULL COMMENT '标签ID',
   PRIMARY KEY (`blog_id`, `tag_id`),
@@ -123,8 +118,7 @@ CREATE TABLE `blog_tags` (
 -- ---------------------------------------------------------------------
 -- 6. 评论表(支持二级回复)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `comments`;
-CREATE TABLE `comments` (
+CREATE TABLE IF NOT EXISTS `comments` (
   `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '评论ID',
   `blog_id`     BIGINT UNSIGNED NOT NULL                COMMENT '所属博客ID',
   `user_id`     BIGINT UNSIGNED NOT NULL                COMMENT '评论者ID',
@@ -151,8 +145,7 @@ CREATE TABLE `comments` (
 -- ---------------------------------------------------------------------
 -- 7. 点赞表(博客/评论通用)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `likes`;
-CREATE TABLE `likes` (
+CREATE TABLE IF NOT EXISTS `likes` (
   `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id`     BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
   `target_type` VARCHAR(20)     NOT NULL COMMENT '目标类型: blog/comment',
@@ -166,8 +159,7 @@ CREATE TABLE `likes` (
 -- ---------------------------------------------------------------------
 -- 8. 收藏表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `favorites`;
-CREATE TABLE `favorites` (
+CREATE TABLE IF NOT EXISTS `favorites` (
   `id`         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id`    BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
   `blog_id`    BIGINT UNSIGNED NOT NULL COMMENT '博客ID',
@@ -181,8 +173,7 @@ CREATE TABLE `favorites` (
 -- ---------------------------------------------------------------------
 -- 9. 浏览记录表(用于个性化推荐)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `view_logs`;
-CREATE TABLE `view_logs` (
+CREATE TABLE IF NOT EXISTS `view_logs` (
   `id`         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id`    BIGINT UNSIGNED NULL     COMMENT '用户ID(游客为空)',
   `blog_id`    BIGINT UNSIGNED NOT NULL COMMENT '博客ID',
@@ -197,8 +188,7 @@ CREATE TABLE `view_logs` (
 -- ---------------------------------------------------------------------
 -- 10. 举报表
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `reports`;
-CREATE TABLE `reports` (
+CREATE TABLE IF NOT EXISTS `reports` (
   `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id`     BIGINT UNSIGNED NOT NULL COMMENT '举报人ID',
   `target_type` VARCHAR(20)     NOT NULL COMMENT '目标类型: blog/comment',
@@ -213,8 +203,7 @@ CREATE TABLE `reports` (
 -- ---------------------------------------------------------------------
 -- 11. AI 配置表(后台可配置的 AI Agent 参数)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `ai_configs`;
-CREATE TABLE `ai_configs` (
+CREATE TABLE IF NOT EXISTS `ai_configs` (
   `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `config_key`   VARCHAR(60)  NOT NULL COMMENT '配置键',
   `config_value` TEXT         NOT NULL COMMENT '配置值(字符串/JSON)',
@@ -228,8 +217,7 @@ CREATE TABLE `ai_configs` (
 -- ---------------------------------------------------------------------
 -- 12. AI 调用日志表(用量统计与成本追踪)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `ai_logs`;
-CREATE TABLE `ai_logs` (
+CREATE TABLE IF NOT EXISTS `ai_logs` (
   `id`          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id`     BIGINT UNSIGNED NULL     COMMENT '调用用户ID',
   `action`      VARCHAR(40)     NOT NULL COMMENT 'AI 能力: draft/polish/title/summary/keywords/reply/sentiment/moderate/recommend',
@@ -249,8 +237,7 @@ CREATE TABLE `ai_logs` (
 -- ---------------------------------------------------------------------
 -- 13. 敏感词表(内容审核规则可自定义)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `sensitive_words`;
-CREATE TABLE `sensitive_words` (
+CREATE TABLE IF NOT EXISTS `sensitive_words` (
   `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `word`       VARCHAR(60)  NOT NULL COMMENT '敏感词',
   `category`   VARCHAR(30)  NOT NULL DEFAULT 'other' COMMENT '类别: politics/porn/ad/abuse/other',
@@ -265,8 +252,7 @@ CREATE TABLE `sensitive_words` (
 -- ---------------------------------------------------------------------
 -- 14. 每日统计表(定时任务写入)
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `stats_daily`;
-CREATE TABLE `stats_daily` (
+CREATE TABLE IF NOT EXISTS `stats_daily` (
   `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `stat_date`    DATE         NOT NULL COMMENT '统计日期',
   `pv`           INT          NOT NULL DEFAULT 0 COMMENT '页面访问量',
