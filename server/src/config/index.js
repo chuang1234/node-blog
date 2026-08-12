@@ -95,6 +95,16 @@ const config = {
   },
 
   apiRateLimitPerMin: num(process.env.API_RATE_LIMIT_PER_MIN, 300),
+
+  // ---------------- 站点 SEO（sitemap / RSS 使用） ----------------
+  // SITE_URL 留空时，sitemap/RSS 会从请求 Host 自动推导（适合反向代理后部署）；
+  // 若站点有固定域名，建议显式配置以避免多域名/代理导致的地址不一致。
+  siteUrl: process.env.SITE_URL || '',
+  siteName: process.env.SITE_NAME || 'AI Agent 博客',
+  siteDesc:
+    process.env.SITE_DESC || 'AI Agent 博客系统 - 集成大模型的内容创作、审核与互动平台',
+  // 站点语言（写入 RSS <language>）
+  lang: process.env.SITE_LANG || 'zh-CN',
 };
 
 module.exports = config;

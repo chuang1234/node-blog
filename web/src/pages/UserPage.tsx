@@ -8,10 +8,10 @@
  *  - 关注：该用户关注的人
  * 所有内容均为公开信息，无需登录即可访问；关注/取关需登录。
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Tabs, Avatar, Spin, Empty, Button, Statistic, Result } from 'antd';
+import { Tabs, Avatar, Spin, Empty, Button, Statistic, Result, Pagination } from 'antd';
 import { UserAddOutlined, CheckOutlined } from '@ant-design/icons';
 import { userApi, blogApi } from '@/api';
 import { useAppSelector } from '@/store';
@@ -45,11 +45,13 @@ export default function UserPage() {
   const [pageNum, setPageNum] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // 关注类标签数据
+  // 关注类标签数据（页码分页器：每页替换，不累加）
   const [followItems, setFollowItems] = useState<FollowUser[]>([]);
   const [followTotal, setFollowTotal] = useState(0);
   const [followPageNum, setFollowPageNum] = useState(1);
+  const [followPageSize, setFollowPageSize] = useState(FOLLOW_PAGE_SIZE);
   const [followLoading, setFollowLoading] = useState(false);
+  const followListRef = useRef<HTMLDivElement>(null);
 
   // 加载用户公开资料
   useEffect(() => {
@@ -93,15 +95,15 @@ export default function UserPage() {
   );
 
   const fetchFollows = useCallback(
-    async (page: number) => {
+    async (page: number, size: number) => {
       setFollowLoading(true);
       try {
-        const params = { pageNum: page, pageSize: FOLLOW_PAGE_SIZE };
+        const params = { pageNum: page, pageSize: size };
         const res =
           tab === 'followers'
             ? await userApi.followers(userId, params)
             : await userApi.following(userId, params);
-        setFollowItems((prev) => (page === 1 ? res.list : [...prev, ...res.list]));
+        setFollowItems(res.list);
         setFollowTotal(res.pagination?.total ?? 0);
       } catch {
         /* 拦截器已提示 */
@@ -118,6 +120,7 @@ export default function UserPage() {
     setItems([]);
     setTotal(0);
     setFollowPageNum(1);
+    setFollowPageSize(FOLLOW_PAGE_SIZE);
     setFollowItems([]);
     setFollowTotal(0);
   }, [tab, userId]);
@@ -127,8 +130,8 @@ export default function UserPage() {
   }, [pageNum, fetchBlogs, isBlogTab, userId]);
 
   useEffect(() => {
-    if (!Number.isNaN(userId) && isFollowTab) fetchFollows(followPageNum);
-  }, [followPageNum, fetchFollows, isFollowTab, userId]);
+    if (!Number.isNaN(userId) && isFollowTab) fetchFollows(followPageNum, followPageSize);
+  }, [followPageNum, followPageSize, fetchFollows, isFollowTab, userId]);
 
   const onToggleFollow = async () => {
     if (!requireLogin()) return; // 未登录：弹登录提示，不跳转整页
@@ -176,18 +179,29 @@ export default function UserPage() {
         {followItems.length === 0 && !followLoading ? (
           <Empty description={t('user.empty')} style={{ padding: 40 }} />
         ) : (
-          <div className="user-page__follow-list">
+          <div className="user-page__follow-list" ref={followListRef}>
             {followItems.map((u) => (
               <FollowUserItem key={u.id} user={u} currentUserId={me?.id} />
             ))}
           </div>
         )}
       </Spin>
-      {followItems.length < followTotal && (
-        <div className="user-page__more">
-          <Button loading={followLoading} onClick={() => setFollowPageNum((p) => p + 1)}>
-            {t('common.more')}
-          </Button>
+      {followTotal > 0 && (
+        <div className="user-page__pagination">
+          <Pagination
+            current={followPageNum}
+            pageSize={followPageSize}
+            total={followTotal}
+            showSizeChanger
+            showQuickJumper
+            pageSizeOptions={[10, 20, 50]}
+            showTotal={(total) => t('common.total', { count: total })}
+            onChange={(page, size) => {
+              setFollowPageNum(page);
+              setFollowPageSize(size);
+              followListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+          />
         </div>
       )}
     </>

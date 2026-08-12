@@ -22,6 +22,13 @@ module.exports = {
     return cache.wrap('category:all', 600, () => categoryDao.findAll());
   },
 
+  /** 按 slug 获取单个分类（公开页面用）；不存在抛 404 */
+  async getCategoryBySlug(slug) {
+    const c = await categoryDao.findBySlug(slug);
+    if (!c) throw errors.notFound('分类不存在');
+    return c;
+  },
+
   async createCategory(data) {
     const name = stripTags(data.name).trim();
     if (!name) throw errors.param('分类名称不能为空');
@@ -72,6 +79,13 @@ module.exports = {
   // ---------------- 标签 ----------------
   async listTags(limit) {
     return cache.wrap(`tag:all:${limit || 200}`, 600, () => tagDao.findAll(limit));
+  },
+
+  /** 按名称获取单个标签（公开页面用）；不存在抛 404 */
+  async getTagByName(name) {
+    const t = await tagDao.findByName(name);
+    if (!t) throw errors.notFound('标签不存在');
+    return t;
   },
 
   async hotTags(limit = 20) {

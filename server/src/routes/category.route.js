@@ -16,6 +16,9 @@ const router = express.Router();
  */
 router.get('/categories', controller.listCategories);
 
+/** 公开：按 slug 获取单个分类 */
+router.get('/categories/:slug', controller.categoryBySlug);
+
 /**
  * @swagger
  * /api/tags:
@@ -27,5 +30,8 @@ router.get('/tags', controller.listTags);
 
 /** 热门标签 */
 router.get('/tags/hot', controller.hotTags);
+
+/** 公开：按名称获取单个标签 */
+router.get('/tags/:name', controller.tagByName);
 
 module.exports = router;

@@ -12,6 +12,12 @@ module.exports = {
     return success(res, list);
   }),
 
+  /** 公开：按 slug 获取单个分类 */
+  categoryBySlug: asyncHandler(async (req, res) => {
+    const c = await categoryService.getCategoryBySlug(req.params.slug);
+    return success(res, c);
+  }),
+
   createCategory: asyncHandler(async (req, res) => {
     const data = await categoryService.createCategory(req.body);
     return success(res, data, '分类创建成功');
@@ -30,6 +36,12 @@ module.exports = {
   listTags: asyncHandler(async (req, res) => {
     const list = await categoryService.listTags(200);
     return success(res, list);
+  }),
+
+  /** 公开：按名称获取单个标签 */
+  tagByName: asyncHandler(async (req, res) => {
+    const t = await categoryService.getTagByName(req.params.name);
+    return success(res, t);
   }),
 
   hotTags: asyncHandler(async (req, res) => {

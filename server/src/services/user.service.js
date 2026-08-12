@@ -63,7 +63,17 @@ module.exports = {
   async getProfile(userId) {
     const user = await userDao.findById(userId);
     if (!user) throw errors.notFound('用户不存在');
-    return toSafeUser(user);
+    const safe = toSafeUser(user);
+    // 附加粉丝 / 关注数（关注系统）
+    try {
+      const followDao = require('../dao/follow.dao');
+      const counts = await followDao.getCounts(userId);
+      safe.followerCount = counts.followerCount;
+      safe.followingCount = counts.followingCount;
+    } catch (e) {
+      console.warn(`获取关注数失败(已忽略): ${e.message}`);
+    }
+    return safe;
   },
 
   /** 查看他人主页 */

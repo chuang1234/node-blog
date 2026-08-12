@@ -41,6 +41,8 @@ export default {
 
   nav: {
     home: '首页',
+    categories: '分类',
+    tags: '标签',
     explore: '发现',
     write: '写文章',
     admin: '后台管理',
@@ -144,6 +146,18 @@ export default {
     share: '分享',
     shareCopied: '文章链接已复制',
     report: '举报',
+  },
+
+  taxonomy: {
+    allCategories: '全部分类',
+    allTags: '全部标签',
+    postsCount: '{{count}} 篇文章',
+    inCategory: '分类：{{name}}',
+    withTag: '标签：{{name}}',
+    emptyCategory: '该分类下还没有文章',
+    emptyTag: '该标签下还没有文章',
+    notFound: '分类或标签不存在',
+    backToList: '返回列表',
   },
 
   comment: {
@@ -306,6 +320,7 @@ export default {
       like_comment: '赞了你的评论',
       favorite: '收藏了你的文章',
       follow: '关注了你',
+      mention: '提到了你',
     },
     articleLink: '查看文章',
     goToArticle: '前往查看',

@@ -24,6 +24,7 @@ const swaggerUi = require('swagger-ui-express');
 const config = require('./config');
 const logger = require('./utils/logger');
 const routes = require('./routes');
+const seoRoutes = require('./routes/seo.route');
 const swaggerSpec = require('./config/swagger');
 const { notFoundHandler, errorHandler } = require('./middlewares/error');
 const { apiRateLimit } = require('./middlewares/rateLimit');
@@ -108,6 +109,8 @@ app.use('/api', apiRateLimit());
 
 // ---------------- 8. 业务路由 ----------------
 app.use('/api', routes);
+// SEO 端点（sitemap / rss / robots）挂在站点根路径
+app.use(seoRoutes);
 
 // ---------------- 9. 接口文档 ----------------
 app.use(

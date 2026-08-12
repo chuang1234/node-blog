@@ -41,9 +41,23 @@
 
   &__stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: @gap;
     margin-bottom: @gap;
+  }
+
+  &__stat-clickable {
+    cursor: pointer;
+  }
+
+  &__follow-list {
+    padding: 8px 0 16px;
+  }
+
+  &__pagination {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 0 4px;
   }
 
   &__overview {

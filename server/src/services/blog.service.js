@@ -210,8 +210,14 @@ module.exports = {
       await blogDao.replaceTags(id, tagIds);
       await tagDao.refreshCount();
     }
+    // 分类变更时需要同时刷新旧分类与新分类的计数，避免旧分类数字残留
     if (data.categoryId !== undefined) {
-      await categoryDao.refreshCount(data.categoryId);
+      const oldCategoryId = blog.categoryId;
+      const newCategoryId = data.categoryId || null;
+      if (oldCategoryId) await categoryDao.refreshCount(oldCategoryId);
+      if (newCategoryId && String(newCategoryId) !== String(oldCategoryId)) {
+        await categoryDao.refreshCount(newCategoryId);
+      }
     }
 
     await invalidateCache(id);
@@ -228,6 +234,7 @@ module.exports = {
     }
     await blogDao.remove(id);
     await tagDao.refreshCount();
+    if (blog.categoryId) await categoryDao.refreshCount(blog.categoryId);
     await invalidateCache(id);
     await invalidateMetaCache();
     return true;

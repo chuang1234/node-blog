@@ -2,7 +2,7 @@
  * 个人中心
  * 四个标签页：概览、我的文章（含管理操作）、我的收藏、账号设置。
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -24,6 +24,7 @@ import {
   Empty,
   Statistic,
   Divider,
+  Pagination,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -36,10 +37,11 @@ import {
 } from '@ant-design/icons';
 import type { RcFile } from 'antd/es/upload';
 import { blogApi, commentApi, userApi } from '@/api';
-import type { Blog, User, BlogStatus, UpdateProfilePayload } from '@/types';
+import type { Blog, User, BlogStatus, UpdateProfilePayload, FollowUser } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { patchUser } from '@/store/authSlice';
 import BlogCard from '@/components/BlogCard';
+import FollowUserItem from '@/components/FollowUserItem';
 import { getImageUrl, formatCount, formatDate } from '@/utils/format';
 import './Profile.less';
 
@@ -53,6 +55,14 @@ export default function Profile() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [favorites, setFavorites] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // 关注类标签数据（粉丝 / 关注，页码分页器）
+  const [followItems, setFollowItems] = useState<FollowUser[]>([]);
+  const [followTotal, setFollowTotal] = useState(0);
+  const [followPageNum, setFollowPageNum] = useState(1);
+  const [followPageSize, setFollowPageSize] = useState(20);
+  const [followLoading, setFollowLoading] = useState(false);
+  const followListRef = useRef<HTMLDivElement>(null);
 
   const loadBlogs = useCallback(async () => {
     setLoading(true);
@@ -77,6 +87,70 @@ export default function Profile() {
     if (tab === 'blogs') loadBlogs();
     if (tab === 'favorites') loadFavorites();
   }, [tab, loadBlogs, loadFavorites]);
+
+  const loadFollows = useCallback(
+    async (type: 'followers' | 'following', page: number, size: number) => {
+      if (!user) return;
+      setFollowLoading(true);
+      try {
+        const params = { pageNum: page, pageSize: size };
+        const res =
+          type === 'followers'
+            ? await userApi.followers(user.id, params)
+            : await userApi.following(user.id, params);
+        setFollowItems(res.list);
+        setFollowTotal(res.pagination?.total ?? 0);
+      } catch {
+        /* ignore */
+      } finally {
+        setFollowLoading(false);
+      }
+    },
+    [user]
+  );
+
+  // 进入粉丝 / 关注 Tab 时加载第一页
+  useEffect(() => {
+    if (tab === 'followers' || tab === 'following') {
+      setFollowPageNum(1);
+      setFollowItems([]);
+      setFollowTotal(0);
+      loadFollows(tab, 1, 20);
+    }
+  }, [tab, loadFollows]);
+
+  const renderFollowList = () => (
+    <Spin spinning={followLoading}>
+      {followItems.length === 0 && !followLoading ? (
+        <Empty description={t('user.empty')} style={{ padding: 40 }} />
+      ) : (
+        <div className="profile__follow-list" ref={followListRef}>
+          {followItems.map((u) => (
+            <FollowUserItem key={u.id} user={u} currentUserId={user?.id} />
+          ))}
+        </div>
+      )}
+      {followTotal > 0 && (
+        <div className="profile__pagination">
+          <Pagination
+            current={followPageNum}
+            pageSize={followPageSize}
+            total={followTotal}
+            showSizeChanger
+            showQuickJumper
+            pageSizeOptions={[10, 20, 50]}
+            showTotal={(total) => t('common.total', { count: total })}
+            onChange={(page, size) => {
+              setFollowPageNum(page);
+              setFollowPageSize(size);
+              loadFollows(tab as 'followers' | 'following', page, size);
+              followListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+          />
+        </div>
+      )}
+    </Spin>
+  );
 
   if (!user) return null;
 
@@ -179,12 +253,18 @@ export default function Profile() {
             <Card>
               <Statistic title={t('profile.blogCount')} value={user.blogCount || 0} />
             </Card>
-          <Card>
-            <Statistic title={t('profile.totalViews')} value={formatCount(user.totalViews)} />
-          </Card>
-          <Card>
-            <Statistic title={t('profile.totalLikes')} value={formatCount(user.totalLikes)} />
-          </Card>
+            <Card className="profile__stat-clickable" onClick={() => setTab('followers')}>
+              <Statistic title={t('profile.followers')} value={user.followerCount || 0} />
+            </Card>
+            <Card className="profile__stat-clickable" onClick={() => setTab('following')}>
+              <Statistic title={t('profile.following')} value={user.followingCount || 0} />
+            </Card>
+            <Card>
+              <Statistic title={t('profile.totalViews')} value={formatCount(user.totalViews)} />
+            </Card>
+            <Card>
+              <Statistic title={t('profile.totalLikes')} value={formatCount(user.totalLikes)} />
+            </Card>
           </div>
           <Card className="profile__overview" title={t('profile.basicInfo')}>
             <Descriptions column={1} bordered size="small">
@@ -215,6 +295,14 @@ export default function Profile() {
               ))}
             </div>
           )}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane tab={t('profile.followers')} key="followers">
+          {renderFollowList()}
+        </Tabs.TabPane>
+
+        <Tabs.TabPane tab={t('profile.following')} key="following">
+          {renderFollowList()}
         </Tabs.TabPane>
 
         <Tabs.TabPane tab={t('profile.settings')} key="settings">

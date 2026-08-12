@@ -262,4 +262,26 @@ module.exports = {
        GROUP BY c.id, c.name ORDER BY value DESC`
     );
   },
+
+  /** sitemap 用：仅返回已发布文章的 id 与变更时间（轻量，无大字段） */
+  findForSitemap() {
+    return db.query(
+      `SELECT b.id, b.published_at AS publishedAt, b.updated_at AS updatedAt
+       FROM blogs b
+       WHERE b.status = 'published'
+       ORDER BY COALESCE(b.published_at, b.created_at) DESC`
+    );
+  },
+
+  /** RSS 用：最新 N 篇已发布文章（含作者与正文摘要） */
+  findForFeed(limit = 20) {
+    return db.query(
+      `SELECT b.id, b.title, b.summary, b.content,
+              b.published_at AS publishedAt, b.updated_at AS updatedAt,
+              u.nickname AS authorName
+       FROM blogs b LEFT JOIN users u ON u.id = b.user_id
+       WHERE b.status = 'published'
+       ORDER BY COALESCE(b.published_at, b.created_at) DESC LIMIT ${Number(limit)}`
+    );
+  },
 };

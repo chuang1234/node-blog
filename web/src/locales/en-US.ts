@@ -43,6 +43,8 @@ const enUS: typeof zhCN = {
 
   nav: {
     home: 'Home',
+    categories: 'Categories',
+    tags: 'Tags',
     explore: 'Explore',
     write: 'Write',
     admin: 'Admin',
@@ -146,6 +148,18 @@ const enUS: typeof zhCN = {
     share: 'Share',
     shareCopied: 'Post link copied',
     report: 'Report',
+  },
+
+  taxonomy: {
+    allCategories: 'All Categories',
+    allTags: 'All Tags',
+    postsCount: '{{count}} posts',
+    inCategory: 'Category: {{name}}',
+    withTag: 'Tag: {{name}}',
+    emptyCategory: 'No posts in this category yet',
+    emptyTag: 'No posts with this tag yet',
+    notFound: 'Category or tag not found',
+    backToList: 'Back to list',
   },
 
   comment: {

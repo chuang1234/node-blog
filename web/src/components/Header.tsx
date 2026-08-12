@@ -19,6 +19,8 @@ import {
   DashboardOutlined,
   LogoutOutlined,
   BellOutlined,
+  AppstoreOutlined,
+  TagsOutlined,
 } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/authSlice';
@@ -87,6 +89,8 @@ export default function Header() {
 
   const navItems = [
     { key: '/', icon: <HomeOutlined />, label: t('nav.home') },
+    { key: '/category', icon: <AppstoreOutlined />, label: t('nav.categories') },
+    { key: '/tag', icon: <TagsOutlined />, label: t('nav.tags') },
     { key: '/search', icon: <CompassOutlined />, label: t('nav.explore') },
   ];
 

@@ -44,6 +44,12 @@ services:
       STATIC_BASE_URL: ""
       # 同源部署无需跨域；若前后端不同域，填前端站点地址（逗号分隔可多个）
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      # 站点 SEO 地址（sitemap/RSS 使用）：留空则从请求 Host 自动推导；
+      # 公网部署建议显式配置固定域名，例如 https://blog.example.com
+      SITE_URL: ${SITE_URL:-}
+      SITE_NAME: ${SITE_NAME:-AI Agent 博客}
+      SITE_DESC: ${SITE_DESC:-AI Agent 博客系统 - 集成大模型的内容创作、审核与互动平台}
+      SITE_LANG: ${SITE_LANG:-zh-CN}
       # AI 服务商：mock(离线规则引擎) / openai / qwen / ernie / deepseek
       AI_PROVIDER: ${AI_PROVIDER:-mock}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}

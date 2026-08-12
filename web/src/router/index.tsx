@@ -20,6 +20,8 @@ import Profile from '@/pages/Profile';
 import UserPage from '@/pages/UserPage';
 import NotificationPage from '@/pages/NotificationPage';
 import Search from '@/pages/Search';
+import CategoryPage from '@/pages/CategoryPage';
+import TagPage from '@/pages/TagPage';
 import NotFound from '@/pages/NotFound';
 import Forbidden from '@/pages/Forbidden';
 
@@ -47,6 +49,10 @@ export function AppRoutes() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
+        <Route path="/category" element={<CategoryPage />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/tag" element={<TagPage />} />
+        <Route path="/tag/:name" element={<TagPage />} />
         <Route path="/search" element={<Search />} />
         <Route path="/user/:id" element={<UserPage />} />
         <Route
