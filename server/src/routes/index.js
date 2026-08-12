@@ -10,6 +10,7 @@ const interactionRoute = require('./interaction.route');
 const aiRoute = require('./ai.route');
 const categoryRoute = require('./category.route');
 const adminRoute = require('./admin.route');
+const notificationRoute = require('./notification.route');
 const { success } = require('../utils/response');
 const cache = require('../config/redis');
 
@@ -37,6 +38,7 @@ router.use('/comments', commentRoute);
 router.use('/interactions', interactionRoute);
 router.use('/ai', aiRoute);
 router.use('/admin', adminRoute);
+router.use('/notifications', notificationRoute);
 // 分类与标签走扁平路径：/api/categories、/api/tags
 router.use('/', categoryRoute);
 

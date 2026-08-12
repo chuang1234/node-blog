@@ -273,6 +273,8 @@ export default {
     blogCount: '文章',
     totalViews: '总阅读',
     totalLikes: '获赞',
+    followers: '粉丝',
+    following: '关注',
     userArticles: 'TA的文章',
     userLikes: 'TA的点赞',
     userFavorites: 'TA的收藏',
@@ -281,6 +283,32 @@ export default {
   user: {
     notFound: '用户不存在或已被禁用',
     empty: '这里还没有内容',
+    follow: '关注',
+    following: '关注中',
+    followers: '粉丝',
+    followed: '已关注',
+    mutual: '互相关注',
+    unfollow: '取消关注',
+    followYou: '回关',
+  },
+
+  notification: {
+    title: '通知',
+    empty: '暂时没有通知',
+    markAllRead: '全部已读',
+    allReaded: '已全部标记为已读',
+    viewAll: '查看全部',
+    clear: '清空',
+    type: {
+      comment: '评论了你的文章',
+      reply: '回复了你的评论',
+      like_blog: '赞了你的文章',
+      like_comment: '赞了你的评论',
+      favorite: '收藏了你的文章',
+      follow: '关注了你',
+    },
+    articleLink: '查看文章',
+    goToArticle: '前往查看',
   },
 
   admin: {

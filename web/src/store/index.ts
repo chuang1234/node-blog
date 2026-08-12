@@ -6,12 +6,14 @@ import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux
 import authReducer from './authSlice';
 import themeReducer from './themeSlice';
 import aiReducer from './aiSlice';
+import notificationReducer from './notificationSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     theme: themeReducer,
     ai: aiReducer,
+    notification: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

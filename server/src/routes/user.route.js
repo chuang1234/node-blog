@@ -4,6 +4,7 @@
  */
 const express = require('express');
 const controller = require('../controllers/user.controller');
+const followController = require('../controllers/follow.controller');
 const { validate } = require('../middlewares/validate');
 const { auth } = require('../middlewares/auth');
 const { user: schema, common } = require('../validators');
@@ -58,5 +59,16 @@ router.get('/:id', validate({ params: common.idParam }), controller.publicProfil
 /** 他人的收藏 / 点赞列表（公开，无需登录） */
 router.get('/:id/favorites', validate({ params: common.idParam }), controller.userFavorites);
 router.get('/:id/likes', validate({ params: common.idParam }), controller.userLikes);
+
+/** 粉丝 / 关注列表（公开） */
+router.get('/:id/followers', validate({ params: common.idParam }), followController.listFollowers);
+router.get('/:id/following', validate({ params: common.idParam }), followController.listFollowing);
+
+/** 关注 / 取消关注（需登录） */
+router.post('/:id/follow', auth(), validate({ params: common.idParam }), followController.follow);
+router.delete('/:id/follow', auth(), validate({ params: common.idParam }), followController.unfollow);
+
+/** 当前登录用户是否已关注该用户（需登录） */
+router.get('/:id/follow-status', auth(), validate({ params: common.idParam }), followController.isFollowing);
 
 module.exports = router;

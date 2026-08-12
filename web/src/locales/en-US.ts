@@ -275,6 +275,8 @@ const enUS: typeof zhCN = {
     blogCount: 'Posts',
     totalViews: 'Views',
     totalLikes: 'Likes',
+    followers: 'Followers',
+    following: 'Following',
     userArticles: 'Articles',
     userLikes: 'Likes',
     userFavorites: 'Favorites',
@@ -283,6 +285,32 @@ const enUS: typeof zhCN = {
   user: {
     notFound: 'User not found or disabled',
     empty: 'Nothing here yet',
+    follow: 'Follow',
+    following: 'Following',
+    followers: 'Followers',
+    followed: 'Following',
+    mutual: 'Mutual',
+    unfollow: 'Unfollow',
+    followYou: 'Follow back',
+  },
+
+  notification: {
+    title: 'Notifications',
+    empty: 'No notifications yet',
+    markAllRead: 'Mark all read',
+    allReaded: 'All marked as read',
+    viewAll: 'View all',
+    clear: 'Clear',
+    type: {
+      comment: 'commented on your post',
+      reply: 'replied to your comment',
+      like_blog: 'liked your post',
+      like_comment: 'liked your comment',
+      favorite: 'bookmarked your post',
+      follow: 'followed you',
+    },
+    articleLink: 'View post',
+    goToArticle: 'Go to view',
   },
 
   admin: {

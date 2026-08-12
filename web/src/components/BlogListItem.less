@@ -91,7 +91,8 @@
     font-size: 14px;
     line-height: 1.6;
     .ellipsis-multi(2);
-    flex: 1;
+    // 避免被 flex 压缩导致只显示半行；固定保留两行高度
+    min-height: calc(1.6em * 2);
   }
 
   &__footer {

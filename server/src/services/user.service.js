@@ -67,9 +67,14 @@ module.exports = {
   },
 
   /** 查看他人主页 */
-  async getPublicProfile(userId) {
+  async getPublicProfile(userId, viewerId) {
     const user = await userDao.findPublicById(userId);
     if (!user) throw errors.notFound('用户不存在或已被禁用');
+    // 登录用户查看他人主页时，附带「是否关注」状态
+    if (viewerId && String(viewerId) !== String(userId)) {
+      const followDao = require('../dao/follow.dao');
+      user.isFollowing = await followDao.isFollowing(viewerId, userId);
+    }
     return user;
   },
 

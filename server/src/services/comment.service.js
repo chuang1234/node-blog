@@ -5,6 +5,7 @@ const commentDao = require('../dao/comment.dao');
 const blogDao = require('../dao/blog.dao');
 const interactionDao = require('../dao/interaction.dao');
 const moderationService = require('./moderation.service');
+const notificationService = require('./notification.service');
 const aiService = require('./ai.service');
 const aiConfigService = require('./aiConfig.service');
 const { errors } = require('../utils/response');
@@ -81,11 +82,13 @@ module.exports = {
 
     // 处理层级关系：统一为二级结构（根评论 + 回复）
     let rootId = null;
+    let replyParent = null;
     if (parentId) {
       const parent = await commentDao.findById(parentId);
       if (!parent) throw errors.notFound('要回复的评论不存在');
       if (String(parent.blogId) !== String(blogId)) throw errors.param('评论与文章不匹配');
       rootId = parent.rootId || parent.id;
+      replyParent = parent;
     }
 
     const commentId = await commentDao.create({
@@ -99,6 +102,27 @@ module.exports = {
 
     await blogDao.incrCounter(blogId, 'comment', 1);
     await invalidateBlogCaches(blogId);
+
+    // 站内通知：评论作者 + 被回复的评论作者（不通知自己）
+    notificationService.notify({
+      userId: blog.userId,
+      type: 'comment',
+      actorId: userId,
+      blogId,
+      targetType: 'blog',
+      targetId: blogId,
+    });
+    if (replyParent) {
+      notificationService.notify({
+        userId: replyParent.userId,
+        type: 'reply',
+        actorId: userId,
+        blogId,
+        commentId: replyParent.id,
+        targetType: 'comment',
+        targetId: replyParent.id,
+      });
+    }
 
     // 异步执行情感分析与自动回复，不阻塞用户提交
     this.postProcess(commentId, blogId, finalContent, userId).catch((err) =>
@@ -226,11 +250,13 @@ module.exports = {
   async toggleLike(userId, targetType, targetId) {
     if (!['blog', 'comment'].includes(targetType)) throw errors.param('非法的点赞目标类型');
 
+    let blog = null;
+    let comment = null;
     if (targetType === 'blog') {
-      const blog = await blogDao.findOwner(targetId);
+      blog = await blogDao.findOwner(targetId);
       if (!blog) throw errors.notFound('文章不存在');
     } else {
-      const comment = await commentDao.findById(targetId);
+      comment = await commentDao.findById(targetId);
       if (!comment) throw errors.notFound('评论不存在');
     }
 
@@ -245,8 +271,8 @@ module.exports = {
         const counters = await blogDao.getCounters(targetId);
         return { liked: false, likeCount: counters ? counters.likeCount : 0 };
       }
-      const comment = await commentDao.findById(targetId);
-      return { liked: false, likeCount: comment ? comment.likeCount : 0 };
+      const c = await commentDao.findById(targetId);
+      return { liked: false, likeCount: c ? c.likeCount : 0 };
     }
 
     await interactionDao.addLike(userId, targetType, targetId);
@@ -254,12 +280,34 @@ module.exports = {
     else await commentDao.incrLike(targetId, 1);
     if (targetType === 'blog') await invalidateBlogCaches(targetId);
 
+    // 站内通知（仅新增点赞时，且不通知自己）
+    if (targetType === 'blog') {
+      notificationService.notify({
+        userId: blog.userId,
+        type: 'like_blog',
+        actorId: userId,
+        blogId: targetId,
+        targetType: 'blog',
+        targetId,
+      });
+    } else {
+      notificationService.notify({
+        userId: comment.userId,
+        type: 'like_comment',
+        actorId: userId,
+        blogId: comment.blogId,
+        commentId: targetId,
+        targetType: 'comment',
+        targetId,
+      });
+    }
+
     if (targetType === 'blog') {
       const counters = await blogDao.getCounters(targetId);
       return { liked: true, likeCount: counters ? counters.likeCount : 0 };
     }
-    const comment = await commentDao.findById(targetId);
-    return { liked: true, likeCount: comment ? comment.likeCount : 0 };
+    const c = await commentDao.findById(targetId);
+    return { liked: true, likeCount: c ? c.likeCount : 0 };
   },
 
   /** 收藏或取消收藏 */
@@ -278,6 +326,15 @@ module.exports = {
     await interactionDao.addFavorite(userId, blogId);
     await blogDao.incrCounter(blogId, 'favorite', 1);
     await invalidateBlogCaches(blogId);
+    // 站内通知（仅新增收藏时，且不通知自己）
+    notificationService.notify({
+      userId: blog.userId,
+      type: 'favorite',
+      actorId: userId,
+      blogId,
+      targetType: 'blog',
+      targetId: blogId,
+    });
     const counters = await blogDao.getCounters(blogId);
     return { favorited: true, favoriteCount: counters ? counters.favoriteCount : 0 };
   },

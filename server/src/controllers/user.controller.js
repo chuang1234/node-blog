@@ -27,7 +27,7 @@ module.exports = {
 
   /** 查看他人主页 */
   publicProfile: asyncHandler(async (req, res) => {
-    const user = await userService.getPublicProfile(req.params.id);
+    const user = await userService.getPublicProfile(req.params.id, req.user?.id);
     return success(res, user);
   }),
 

@@ -4,10 +4,10 @@
  * 包含：站点 Logo、主导航、搜索框、主题切换、语言切换、用户菜单。
  * 登录态由 store 驱动；未登录显示登录/注册按钮，登录后显示头像下拉菜单。
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Layout, Input, Dropdown, Avatar, Button, Space, Tooltip } from 'antd';
+import { Layout, Input, Dropdown, Avatar, Button, Space, Tooltip, Badge } from 'antd';
 import {
   HomeOutlined,
   CompassOutlined,
@@ -18,11 +18,14 @@ import {
   UserOutlined,
   DashboardOutlined,
   LogoutOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { logout } from '@/store/authSlice';
 import { toggleTheme } from '@/store/themeSlice';
 import { getImageUrl, pageTitle } from '@/utils/format';
+import NotificationDrawer from '@/components/NotificationDrawer';
+import { fetchUnread, setUnread } from '@/store/notificationSlice';
 import './Header.less';
 
 const { Header: AntHeader } = Layout;
@@ -35,7 +38,20 @@ export default function Header() {
   const user = useAppSelector((s) => s.auth.user);
   const mode = useAppSelector((s) => s.theme.mode);
   const lang = useAppSelector((s) => s.theme.lang);
+  const unread = useAppSelector((s) => s.notification.unread);
   const [keyword, setKeyword] = useState('');
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  // 登录后拉取未读数并每 60s 轮询刷新；退出登录则清零
+  useEffect(() => {
+    if (!user) {
+      dispatch(setUnread(0));
+      return;
+    }
+    dispatch(fetchUnread());
+    const timer = setInterval(() => dispatch(fetchUnread()), 60000);
+    return () => clearInterval(timer);
+  }, [user?.id, dispatch]);
 
   const onSearch = (value: string) => {
     const kw = value.trim();
@@ -124,6 +140,18 @@ export default function Header() {
         </div>
 
         <Space size={4} className="site-header__actions">
+          {user && (
+            <Tooltip title={t('notification.title')}>
+              <Badge count={unread} size="small" offset={[-2, 2]}>
+                <Button
+                  type="text"
+                  aria-label="notifications"
+                  icon={<BellOutlined />}
+                  onClick={() => setNotifOpen(true)}
+                />
+              </Badge>
+            </Tooltip>
+          )}
           <Tooltip title={mode === 'dark' ? t('nav.themeLight') : t('nav.themeDark')}>
             <Button
               type="text"
@@ -163,6 +191,7 @@ export default function Header() {
           )}
         </Space>
       </div>
+      <NotificationDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
     </AntHeader>
   );
 }

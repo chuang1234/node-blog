@@ -40,9 +40,26 @@
     color: #999;
   }
 
+  &__follow-btn {
+    flex-shrink: 0;
+    align-self: center;
+
+    &.is-following {
+      color: #999;
+    }
+  }
+
   &__stats {
     display: flex;
     gap: 28px;
+  }
+
+  &__stat-clickable {
+    cursor: pointer;
+  }
+
+  &__follow-list {
+    padding: 8px 0 16px;
   }
 
   &__tabs {

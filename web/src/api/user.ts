@@ -4,6 +4,7 @@
 import { request } from '@/utils/request';
 import type {
   Blog,
+  FollowUser,
   LoginPayload,
   LoginResult,
   PageData,
@@ -43,6 +44,25 @@ export const userApi = {
   /** 查看他人点赞过的文章（公开） */
   userLikes: (id: number, params: PageQuery) =>
     request.get<PageData<Blog>>(`/api/users/${id}/likes`, params),
+
+  // ---------------- 关注 ----------------
+
+  /** 关注某用户 */
+  follow: (id: number) => request.post<null>(`/api/users/${id}/follow`),
+
+  /** 取消关注 */
+  unfollow: (id: number) => request.delete<null>(`/api/users/${id}/follow`),
+
+  /** 当前用户是否已关注该用户 */
+  followStatus: (id: number) => request.get<{ following: boolean }>(`/api/users/${id}/follow-status`),
+
+  /** 粉丝列表（公开） */
+  followers: (id: number, params: PageQuery) =>
+    request.get<PageData<FollowUser>>(`/api/users/${id}/followers`, params),
+
+  /** 关注列表（公开） */
+  following: (id: number, params: PageQuery) =>
+    request.get<PageData<FollowUser>>(`/api/users/${id}/following`, params),
 
   // ---------------- 管理端 ----------------
 

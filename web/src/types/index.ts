@@ -58,7 +58,20 @@ export interface User {
   blogCount?: number;
   totalViews?: number;
   totalLikes?: number;
+  followerCount?: number;
+  followingCount?: number;
+  isFollowing?: boolean;
   createdAt?: string;
+}
+
+/** 关注列表中的用户项（public 字段 + 当前用户是否已关注） */
+export interface FollowUser {
+  id: number;
+  username: string;
+  nickname: string;
+  avatar: string;
+  bio: string;
+  isFollowing?: boolean;
 }
 
 export interface LoginPayload {
@@ -358,4 +371,32 @@ export interface SensitiveWord {
   level: 1 | 2 | 3;
   enabled: number | boolean;
   createdAt?: string;
+}
+
+// ==================== 通知 ====================
+
+export type NotificationType = 'comment' | 'reply' | 'like_blog' | 'like_comment' | 'favorite' | 'follow';
+
+export interface Notification {
+  id: number;
+  userId: number;
+  type: NotificationType;
+  actorId: number;
+  blogId: number | null;
+  commentId: number | null;
+  targetType: string | null;
+  targetId: number | null;
+  isRead: number;
+  createdAt: string;
+  // 关联字段
+  actorName?: string;
+  actorAvatar?: string;
+  blogTitle?: string;
+  blogStatus?: string;
+}
+
+export interface NotificationListResult {
+  list: Notification[];
+  unreadCount: number;
+  pagination: Pagination;
 }
